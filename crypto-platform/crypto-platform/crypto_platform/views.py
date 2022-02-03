@@ -4,7 +4,7 @@ Routes and views for the flask application.
 
 from datetime import datetime
 from flask import render_template
-from crypto_platform import app
+from crypto_platform import app, coinbaseconnect
 
 @app.route('/')
 @app.route('/home')
@@ -13,7 +13,23 @@ def home():
     return render_template(
         'index.html',
         title='Home Page',
+        year=datetime.now().year
+    )
+
+@app.route('/coinbase_login')
+def login():
+    return coinbaseconnect.coinbase_login()
+
+@app.route('/redirect') # This is the page that users are redirected to after logging in to Coinbase
+def redirect():
+    """Renders the about page and handles coinbase_callback."""
+    tokens = coinbaseconnect.coinbase_callback()
+
+    return render_template(
+        'about.html',
+        title='About',
         year=datetime.now().year,
+        message='Your application description page.'
     )
 
 @app.route('/contact')
@@ -29,6 +45,7 @@ def contact():
 @app.route('/about')
 def about():
     """Renders the about page."""
+    coinbaseconnect.coinbase_callback()
     return render_template(
         'about.html',
         title='About',

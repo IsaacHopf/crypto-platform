@@ -28,6 +28,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="crypto_platform\coinbaseconnect.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="crypto_platform\__init__.py" />
     <Compile Include="crypto_platform\views.py" />
@@ -41,6 +44,8 @@
     <Folder Include="crypto_platform\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="crypto_platform\templates\redirect.html" />
+    <Content Include="crypto_platform\templates\contact.html" />
     <Content Include="requirements.txt" />
     <Content Include="crypto_platform\static\content\bootstrap.css" />
     <Content Include="crypto_platform\static\content\bootstrap.min.css" />
@@ -65,7 +70,6 @@
     <Content Include="crypto_platform\static\scripts\respond.min.js" />
     <Content Include="crypto_platform\static\scripts\_references.js" />
     <Content Include="crypto_platform\templates\about.html" />
-    <Content Include="crypto_platform\templates\contact.html" />
     <Content Include="crypto_platform\templates\index.html" />
     <Content Include="crypto_platform\templates\layout.html" />
   </ItemGroup>
