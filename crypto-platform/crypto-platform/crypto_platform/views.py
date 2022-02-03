@@ -17,7 +17,7 @@ def home():
     )
 
 @app.route('/coinbase_login')
-def login():
+def coinbase_login():
     return coinbaseconnect.coinbase_login()
 
 @app.route('/redirect') # This is the page that users are redirected to after logging in to Coinbase
