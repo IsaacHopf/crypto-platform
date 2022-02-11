@@ -28,7 +28,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="crypto_platform\coinbaseconnect.py">
+    <Compile Include="crypto_platform\coinbasescripts\connect.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="crypto_platform\coinbasescripts\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="crypto_platform\coinbasescripts\User.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="runserver.py" />
@@ -37,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="crypto_platform\" />
+    <Folder Include="crypto_platform\coinbasescripts\" />
     <Folder Include="crypto_platform\static\" />
     <Folder Include="crypto_platform\static\content\" />
     <Folder Include="crypto_platform\static\fonts\" />

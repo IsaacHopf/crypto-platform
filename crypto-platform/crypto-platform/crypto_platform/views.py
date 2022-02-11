@@ -4,7 +4,10 @@ Routes and views for the flask application.
 
 from datetime import datetime
 from flask import render_template
-from crypto_platform import app, coinbaseconnect
+from crypto_platform import app
+
+from crypto_platform.coinbasescripts import connect
+from crypto_platform.coinbasescripts.User import User
 
 @app.route('/')
 @app.route('/home')
@@ -18,12 +21,15 @@ def home():
 
 @app.route('/coinbase_login')
 def coinbase_login():
-    return coinbaseconnect.coinbase_login()
+    return connect.coinbase_login()
 
 @app.route('/redirect') # This is the page that users are redirected to after logging in to Coinbase
 def redirect():
     """Renders the about page and handles coinbase_callback."""
-    tokens = coinbaseconnect.coinbase_callback()
+    tokens = connect.coinbase_callback()
+
+    global user
+    user = User(tokens)
 
     return render_template(
         'about.html',

@@ -14,7 +14,7 @@ state = str(uuid.uuid4())
 
 # Direct user to Coinbase login and authorization
 def coinbase_login():
-    auth_url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id={}&redirect_uri={}&state={}&scope=wallet:accounts:read'.format(client_id, redirect_uri, state)
+    auth_url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id={}&redirect_uri={}&state={}&scope=wallet:accounts:read,wallet:payment-methods:read'.format(client_id, redirect_uri, state)
     return redirect(auth_url)
 
 # Callback to Coinbase to get the access token
