@@ -11,14 +11,15 @@ client_id = 'ffa005fb7872cbeafb2bb86db26217f7088c3562b844612294b700bccee89d84' #
 client_secret = 'c2eac670443511e9b227d2bf00537560e949afe1182835ca466adc3b18886cc6' # The client secret of the registered Coinbase OAuth2 application
 redirect_uri = 'http://127.0.0.1:5000/redirect'
 state = str(uuid.uuid4())
+scope = 'wallet:accounts:read,wallet:payment-methods:read,wallet:buys:create,wallet:buys:read,wallet:sells:create,wallet:sells:read'
 
-# Direct user to Coinbase login and authorization
 def coinbase_login():
-    auth_url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id={}&redirect_uri={}&state={}&scope=wallet:accounts:read,wallet:payment-methods:read'.format(client_id, redirect_uri, state)
+    """Directs the user to login through Coinbase."""
+    auth_url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id={}&redirect_uri={}&state={}&scope={}'.format(client_id, redirect_uri, state, scope)
     return redirect(auth_url)
 
-# Callback to Coinbase to get the access token
 def coinbase_callback():
+    """Callbacks to Coinbase to get the access token and refresh token."""
     login_response_code = request.args.get('code')
     login_response_state = request.args.get('state')
 
@@ -30,8 +31,8 @@ def coinbase_callback():
         refresh_token = callback_response.json()['refresh_token']
         return {'access_token': access_token, 'refresh_token': refresh_token}
     else:
-        print('login_response_state and state do not match')
+        print('redirect user back to home page and say an error has occurred, please try logging in again')
 
-#
 def coinbase_logout():
-    print('placeholder')
+    """"""
+    pass
