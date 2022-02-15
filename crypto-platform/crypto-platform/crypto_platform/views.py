@@ -30,6 +30,7 @@ def redirect():
 
     global user
     user = User(tokens)
+    #connect.getPrices()
 
     return render_template(
         'about.html',

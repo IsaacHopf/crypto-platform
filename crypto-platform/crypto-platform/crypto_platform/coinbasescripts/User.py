@@ -26,3 +26,5 @@ class User(object):
     def sell(self, amount, currency):
         """Sells cryptocurrency using the User's account."""
         self.client.sell(self.id, amount=amount, currency=currency, payment_method=self.payment_method)
+
+        
