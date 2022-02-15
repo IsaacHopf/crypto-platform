@@ -34,10 +34,6 @@ def coinbase_callback():
     else:
         print('redirect user back to home page and say an error has occurred, please try logging in again')
 
-def coinbase_logout():
-    """"""
-    pass
-
 def getPrices():
     while True:
         response = requests.get('https://api.coinbase.com/v2/prices/BTC-USD/spot')

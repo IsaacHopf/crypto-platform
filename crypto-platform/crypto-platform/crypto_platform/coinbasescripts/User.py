@@ -27,4 +27,6 @@ class User(object):
         """Sells cryptocurrency using the User's account."""
         self.client.sell(self.id, amount=amount, currency=currency, payment_method=self.payment_method)
 
-        
+    def logout():
+        """Logs out the user by revoking the access token."""
+        self.client.revoke()
