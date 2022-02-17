@@ -31,6 +31,9 @@
     <Compile Include="crypto_platform\coinbasescripts\connect.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="crypto_platform\coinbasescripts\invest.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="crypto_platform\coinbasescripts\__init__.py">
       <SubType>Code</SubType>
     </Compile>

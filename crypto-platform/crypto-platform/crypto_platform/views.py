@@ -33,8 +33,8 @@ def redirect():
     #connect.getPrices()
 
     return render_template(
-        'about.html',
-        title='About',
+        'redirect.html',
+        title='Redirect',
         year=datetime.now().year,
         message='Your application description page.'
     )
@@ -52,7 +52,6 @@ def contact():
 @app.route('/about')
 def about():
     """Renders the about page."""
-    coinbaseconnect.coinbase_callback()
     return render_template(
         'about.html',
         title='About',

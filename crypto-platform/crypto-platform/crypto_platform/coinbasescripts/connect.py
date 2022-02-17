@@ -1,5 +1,5 @@
 """
-Scripts for Coinbase Connect.
+Scripts for Coinbase Connect that handle user authentication and authorization.
 """
 
 import uuid
@@ -20,7 +20,7 @@ def coinbase_login():
     return redirect(auth_url)
 
 def coinbase_callback():
-    """Callbacks to Coinbase to get the access token and refresh token."""
+    """Calls back to Coinbase to get the access token and refresh token."""
     login_response_code = request.args.get('code')
     login_response_state = request.args.get('state')
 
