@@ -2,10 +2,10 @@
 Scripts for initial investing and tax-loss harvesting.
 """
 
-possible_basket = ['BTC', 0.5, 'ETH', 0.5] # I think the baskets are best represented as lists in the code. When we set up the database, we can put the data into a list like this.
-another_possible_basket = ['BTC', 0.4, 'ETH', 0.2, 'USDT', 0.2, 'BNB', 0.2]
+possible_basket = [['BTC', 0.5], ['ETH', 0.5]] # I think the baskets are best represented as lists in the code. When we set up the database, we can put the data into a list like this.
+another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['BNB', 0.2]]
 
-def make_initial_investment(user, basket):
+def make_initial_investment(user, basket, amount):
     """Makes the user's initial investment."""
     pass
 
