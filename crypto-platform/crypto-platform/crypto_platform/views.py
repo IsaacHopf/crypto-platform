@@ -7,6 +7,7 @@ from flask import render_template
 from crypto_platform import app
 
 from crypto_platform.coinbasescripts import connect
+from crypto_platform.coinbasescripts import invest
 from crypto_platform.coinbasescripts.User import User
 
 @app.route('/')
@@ -30,6 +31,7 @@ def redirect():
 
     global user
     user = User(tokens)
+
     #connect.getPrices()
 
     return render_template(
@@ -37,6 +39,16 @@ def redirect():
         title='Redirect',
         year=datetime.now().year,
         message='Your application description page.'
+    )
+
+@app.route('/testscripts') #this is a page that will only run scripts so we can test stuff
+def testscripts():
+    invest.process_investments()
+
+    return render_template(
+    'index.html',
+    title='Home Page',
+    year=datetime.now().year
     )
 
 @app.route('/contact')
