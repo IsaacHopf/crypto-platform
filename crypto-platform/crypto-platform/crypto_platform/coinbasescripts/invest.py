@@ -21,6 +21,12 @@ def check_tax_loss_harvest(): # This is the function that we would run periodica
 
 def tax_loss_harvest(user): # This is the function that would run everytime the user activates it. Either by clicking a button, logging in, or withdrawing their investment.
     """Performs the tax-loss harvesting process."""
+
+    # IMPORTANT
+    # After you sell but before you buy, make sure to check that user.cash_payment_method[primary_buy] == True
+    # Also, be sure to buy the exact amount in the Cash wallet, no more no less
+    # This ensures that the buys will be paid for by the earnings from the sells and NOT the user's added payment method
+
     pass
 
 def get_crypto_prices(): # This is the function that will get the prices of every crypto currency

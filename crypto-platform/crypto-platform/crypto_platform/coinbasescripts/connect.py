@@ -12,7 +12,7 @@ client_id = 'ffa005fb7872cbeafb2bb86db26217f7088c3562b844612294b700bccee89d84' #
 client_secret = 'c2eac670443511e9b227d2bf00537560e949afe1182835ca466adc3b18886cc6' # The client secret of the registered Coinbase OAuth2 application
 redirect_uri = 'http://127.0.0.1:5000/redirect'
 state = str(uuid.uuid4())
-scope = 'wallet:accounts:read,wallet:payment-methods:read,wallet:buys:create,wallet:buys:read,wallet:sells:create,wallet:sells:read'
+scope = 'wallet:accounts:read,wallet:payment-methods:read,wallet:buys:create,wallet:buys:read,wallet:sells:create,wallet:sells:read,wallet:withdrawals:create,wallet:user:read,wallet:user:email'
 
 def coinbase_login():
     """Directs the user to login through Coinbase."""
