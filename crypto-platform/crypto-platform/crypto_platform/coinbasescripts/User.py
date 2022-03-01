@@ -6,15 +6,15 @@ class User(object):
     """Represents the user of our platform."""
 
     def __init__(self, tokens):
-        self.client = OAuthClient(tokens['access_token'], tokens['refresh_token']) # The client used to connect to the user's Coinbase account
+        self.client = OAuthClient(tokens['access_token'], tokens['refresh_token']) # The client used to connect to the user's Coinbase account.
 
         self.current_user = self.client.get_current_user()
         self.native_currency = self.current_user['native_currency']
         self.email = self.current_user['email']
 
         self.payment_methods = self.client.get_payment_methods()
-        self.cash_payment_method = self.__get_cash_payment_method() # The user's Cash payment method (which links to their Cash wallet)
-        self.added_payment_method = self.__get_added_payment_method() # The payment method the user added
+        self.cash_payment_method = self.__get_cash_payment_method() # The user's Cash payment method (which links to their Cash wallet).
+        self.added_payment_method = self.__get_added_payment_method() # The payment method the user added.
 
         #print("PayPal Buy via Coinbase:")
         #print(self.client.get_buy(self.client.get_account('BTC')['id'], '76c92a0d-99c1-5b50-a844-fade0ee7feff'))
@@ -43,11 +43,12 @@ class User(object):
         for payment_method in self.payment_methods['data']:
             if payment_method['allow_buy'] == True & payment_method['allow_withdraw'] == True: # The added payment method must allow buys and withdraws
                 return payment_method
-            else:
-                print("Please add your PayPal or Bank account")
-                # Add code for UI or call function that handles this
-                # Make sure that user.added_payment_method is defined after the user adds the payment method
-                    # Could ask them to log in again
+
+        # If the user hasn't added a payment method
+        print("Please add your PayPal or Bank account")
+        # Add code for UI or call function that handles this
+        # Make sure that user.added_payment_method is defined after the user adds the payment method
+        # Could ask them to log in again
 
     def buy(self, crypto, total):
         """
@@ -80,8 +81,8 @@ class User(object):
         return self.client.buy(account_id, # Buys the specified cryptocurrency.
                                total = total, # Buys the specified total (a portion of this total is used for fees) ...
                                currency = self.native_currency, # in the user's native currency.
-                               commit = False, # Prevents the buy order from processing
-                               quote = True) # Generates the buy order (what it would look like had the buy been processed)
+                               commit = False, # Prevents the buy order from processing.
+                               quote = True) # Generates the buy order (what it would look like had the buy been processed).
 
     def sell(self, crypto, amount):
         """
@@ -104,7 +105,7 @@ class User(object):
         """
         Withdraws money from the user's Cash wallet and deposits the earnings into the user's added payment method.
 
-        amount: the amount to withdraw
+        amount: the amount to withdraw (in the user's native currency)
         """
         account_id = self.client.get_account(self.native_currency)['id'] # Finds the user's Cash wallet.
 

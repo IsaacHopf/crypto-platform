@@ -26,7 +26,7 @@ def coinbase_login():
 
 @app.route('/redirect') # This is the page that users are redirected to after logging in to Coinbase
 def redirect():
-    """Renders the about page and handles coinbase_callback."""
+    """Renders the redirect page and handles coinbase_callback."""
     tokens = connect.coinbase_callback()
 
     global user
