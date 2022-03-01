@@ -40,25 +40,31 @@ def tax_loss_harvest(user): # This is the function that would run everytime the 
 
     pass
 
-def get_crypto_prices(): # This is the function that will get the prices of every crypto currency
-    response = requests.get('https://api.coinbase.com/v2/prices/BTC-USD/spot')
-    data = response.json()
-    BTC_price = data["data"]["amount"]
-    response = requests.get('https://api.coinbase.com/v2/prices/ETH-USD/spot')
-    data = response.json()
-    ETH_price = data["data"]["amount"]
-    crypto_prices = [['BTC', BTC_price], ['ETH', ETH_price]]
-    return crypto_prices
+def get_all_crypto_prices(): # This is the function that will get the prices of every crypto currency we use
 
-def get_one_price(crypto_prices, crypto):
+    all_crypto_prices = [['BTC', 0], ['ETH', 0], ['USDT', 0], ['LTC', 0]] #This list will contain every crypto we use and its price.
+
+    for crypto in all_crypto_prices: #Gets the price of every crypto by calling get_one_price for every crypto and saving the price.
+        price = get_one_price(crypto[0])
+        crypto[1] = price
+    return all_crypto_prices
+
+def get_one_price(crypto): #This function will get the price of one crypto currency and return that price.
+    request_url = ("https://api.coinbase.com/v2/prices/" + crypto + "-USD/spot") #URL for specific crypto
+    response = requests.get(request_url)
+    data = response.json()
+    price = data["data"]["amount"] #price of the crypto
+    return price
+
+"""def get_one_price(crypto_prices, crypto):
     for price in crypto_prices:
         if (price[0] == crypto):
-            return price[1]
+            return price[1]"""
 
 def process_investments():
     investing = True
-    crypto_prices = get_crypto_prices()
-    BTC_price = get_one_price(crypto_prices, 'BTC')
-    print (crypto_prices)
-    print (BTC_price)
+    all_crypto_prices = get_all_crypto_prices()
+    #BTC_price = get_one_price(crypto_prices, 'BTC')
+    print (all_crypto_prices)
+    #print (BTC_price)
 
