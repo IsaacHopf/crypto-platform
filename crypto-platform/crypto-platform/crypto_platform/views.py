@@ -43,7 +43,7 @@ def redirect():
 
 @app.route('/testscripts') #this is a page that will only run scripts so we can test stuff
 def testscripts():
-    invest.process_investments()
+    invest.process_investments(user)
 
     return render_template(
     'index.html',

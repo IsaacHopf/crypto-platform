@@ -1,15 +1,17 @@
 """
 Scripts for initial investing and tax-loss harvesting.
 """
-
 import uuid
 from flask import redirect, request
 import requests
 import json
 import time
+from crypto_platform.coinbasescripts.User import User
+from crypto_platform import views
 
 possible_basket = [['BTC', 0.5], ['ETH', 0.5]] # I think the baskets are best represented as lists in the code. When we set up the database, we can put the data into a list like this.
 another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['LTC', 0.2]]
+
 
 def make_initial_investment(user, basket, amount):
     """
@@ -56,15 +58,19 @@ def get_one_price(crypto): #This function will get the price of one crypto curre
     price = data["data"]["amount"] #price of the crypto
     return price
 
+def get_spot_price(crypto, date, user):
+    spot_price = user.client.get_spot_price(currency_pair= 'BTC-USD', date='2022-3-2')
+    return spot_price
+
 """def get_one_price(crypto_prices, crypto):
     for price in crypto_prices:
         if (price[0] == crypto):
             return price[1]"""
 
-def process_investments():
+def process_investments(user):
     investing = True
     all_crypto_prices = get_all_crypto_prices()
-    #BTC_price = get_one_price(crypto_prices, 'BTC')
+    spot_price = get_spot_price('BTC', '2022-3-2', user)
+    print (f"the spot price is {spot_price}")
     print (all_crypto_prices)
-    #print (BTC_price)
 

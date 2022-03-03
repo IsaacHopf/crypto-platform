@@ -8,6 +8,7 @@ import requests
 import json
 import time
 
+
 client_id = 'ffa005fb7872cbeafb2bb86db26217f7088c3562b844612294b700bccee89d84' # The client ID of the registered Coinbase OAuth2 application
 client_secret = 'c2eac670443511e9b227d2bf00537560e949afe1182835ca466adc3b18886cc6' # The client secret of the registered Coinbase OAuth2 application
 redirect_uri = 'http://127.0.0.1:5000/redirect'
