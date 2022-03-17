@@ -13,14 +13,8 @@ class User(object):
         self.email = self.current_user['email']
 
         self.payment_methods = self.client.get_payment_methods()
-        self.cash_payment_method = self.__get_cash_payment_method() # The user's Cash payment method (which links to their Cash wallet).
-        self.added_payment_method = self.__get_added_payment_method() # The payment method the user added.
-
-        #print("PayPal Buy via Coinbase:")
-        #print(self.client.get_buy(self.client.get_account('BTC')['id'], '76c92a0d-99c1-5b50-a844-fade0ee7feff'))
-
-        #print("PayPal Buy via our Platform:")
-        #print(self.client.get_buy(self.client.get_account('BTC')['id'], '652dee88-aaeb-5869-9f11-75cbde263cc4'))
+        self.cash_payment_method_id = self.__get_cash_payment_method_id() # The id of the user's Cash payment method (which links to their Cash wallet).
+        self.bank_payment_method_id = self.__get_bank_payment_method_id() # The id of the bank payment method the user added.
 
         ######Test buy
         #print("BUY $2 of BTC")
@@ -31,28 +25,28 @@ class User(object):
         #print("USD Wallet: ")
         #print(self.client.get_account('USD'))
 
-    def __get_cash_payment_method(self):
+    def __get_cash_payment_method_id(self):
         """Gets the user's Cash payment method. This payment method always exists and links directly to the user's Cash wallet (which is in their native currency)."""
         for payment_method in self.payment_methods['data']:
-            if re.match("Cash", payment_method['name']): # The name of the Cash payment method always starts with "Cash"
-                return payment_method
+            if re.match("Cash", payment_method['name']) is not None: # The name of the Cash payment method always starts with "Cash".
+                return payment_method['id']
             # There will always be a Cash account, so do I need any error handling here?
 
-    def __get_added_payment_method(self):
-        """Gets the payment method the user added. If they have not added a payment method, asks them to add one."""
+    def __get_bank_payment_method_id(self):
+        """Gets the bank payment method the user added. If they have not added a bank payment method, asks them to add one."""
         for payment_method in self.payment_methods['data']:
-            if payment_method['allow_buy'] == True & payment_method['allow_withdraw'] == True: # The added payment method must allow buys and withdraws
-                return payment_method
+            if re.search("bank_account", payment_method['type']) is not None and payment_method['allow_withdraw'] == True: # The type of a bank payment method always contains "bank_account"
+                return payment_method['id']
 
         # If the user hasn't added a payment method
-        print("Please add your PayPal or Bank account")
+        print("Please add your Bank account as a payment method.")
         # Add code for UI or call function that handles this
         # Make sure that user.added_payment_method is defined after the user adds the payment method
         # Could ask them to log in again
 
-    def buy(self, crypto, total):
+    def buy_with_cash_payment_method(self, crypto, total):
         """
-        Buys cryptocurrency for the user. If the user has cash, it pays with their Cash wallet. Otherwise, it pays with their added payment method.
+        Buys cryptocurrency for the user and pays with the user's cash wallet. This is used when tax loss harvesting.
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         total: the total that will be spent (in the user's native currency)
@@ -62,7 +56,27 @@ class User(object):
         try:
             self.client.buy(account_id, # Buys the specified cryptocurrency.
                             total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                            currency = self.native_currency) # in the user's native currency.
+                            currency = self.native_currency, # in the user's native currency.
+                            payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
+        except RateLimitExceededError:
+            print("The buy was too large. Please check your Account Limits on Coinbase or make a smaller investment.")
+        except:
+            print("The buy did not process. Please try again.")
+
+    def buy_with_bank_payment_method(self, crypto, total):
+        """
+        Buys cryptocurrency for the user and pays with the user's bank payment method. This is used for initial investments.
+
+        crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
+        total: the total that will be spent (in the user's native currency)
+        """
+        account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
+
+        try:
+            self.client.buy(account_id, # Buys the specified cryptocurrency.
+                            total = total, # Buys the specified total (a portion of this total is used for fees) ...
+                            currency = self.native_currency, # in the user's native currency.
+                            payment_method = self.bank_payment_method_id) # Pays with the user's bank payment method.
         except RateLimitExceededError:
             print("The buy was too large. Please check your Account Limits on Coinbase or make a smaller investment.")
         except:
@@ -74,7 +88,7 @@ class User(object):
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         total: the total that will be spent (in the user's native currency)
-        return: the buy order (what it would look like had the buy been processed)
+        return: the buy order (what it would look like had the buy been processed), as a dict
         """
         account_id = self.client.get_account(crypto)['id'] # Finds the account, or wallet, of the specified cryptocurrency
 
@@ -86,7 +100,7 @@ class User(object):
 
     def sell(self, crypto, amount):
         """
-        Sells cryptocurrency for the user and deposits the earnings into the user's Cash wallet.
+        Sells cryptocurrency for the user. Deposits the earnings into the user's Cash wallet.
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         amount: the amount to sell (in the user's native currency)
@@ -97,13 +111,13 @@ class User(object):
             self.client.sell(account_id, # Sells the specified cryptocurreny.
                              amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
                              currency = self.native_currency, # in the user's native currency.
-                             payment_method = self.cash_payment_method['id']) # Deposits the money into the user's Cash wallet.
+                             payment_method = self.cash_payment_method_id) # Deposits the money into the user's Cash wallet.
         except:
             print("The sell did not process. Please try again.")
 
     def withdraw(self, amount):
         """
-        Withdraws money from the user's Cash wallet and deposits the earnings into the user's added payment method.
+        Withdraws money from the user's Cash wallet and deposits the earnings into the user's bank payment method.
 
         amount: the amount to withdraw (in the user's native currency)
         """
@@ -113,9 +127,18 @@ class User(object):
             self.client.withdraw(account_id, # Withdraws from the user's Cash wallet.
                                  amount = amount, # Withdraws the specified amount ...
                                  currency = self.native_currency, # in the user's native currency.
-                                 payment_method = self.added_payment_method['id']) # Deposits the money into the user's added payment method.
+                                 payment_method = self.bank_payment_method_id) # Deposits the money into the user's bank payment method.
         except:
             print("The withdraw did not process. Please try again.")
+
+    def get_cash_wallet_balance(self):
+        """
+        Gets the balance of the user's Cash wallet.
+
+        return: the balance, as a float
+        """
+        balance = float(self.client.get_account(self.native_currency)['balance']['amount'])
+        return balance
 
     def logout(self):
         """Logs out the user by revoking the access token."""

@@ -10,7 +10,7 @@ from crypto_platform.coinbasescripts.User import User
 from crypto_platform import views
 
 possible_basket = [['BTC', 0.5], ['ETH', 0.5]] # I think the baskets are best represented as lists in the code. When we set up the database, we can put the data into a list like this.
-another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['LTC', 0.2]]
+another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['YFI', 0.2]]
 
 
 def make_initial_investment(user, basket, amount):
@@ -26,7 +26,7 @@ def make_initial_investment(user, basket, amount):
         percent = crypto_percentage[1] # The percentage this cryptocurrency makes up in the basket.
         crypto_amount = amount * percent # The amount of this cryptocurrency to buy.
 
-        user.buy(crypto, crypto_amount)
+        user.buy_with_bank_payment_method(crypto, crypto_amount)
 
 def check_tax_loss_harvest(): # This is the function that we would run periodically to determine if we will send a notification to our users
     """Checks potential for tax-loss harvesting."""
@@ -35,10 +35,8 @@ def check_tax_loss_harvest(): # This is the function that we would run periodica
 def tax_loss_harvest(user): # This is the function that would run everytime the user activates it. Either by clicking a button, logging in, or withdrawing their investment.
     """Performs the tax-loss harvesting process."""
 
-    # IMPORTANT
-    # After you sell but before you buy, make sure to check that user.cash_payment_method[primary_buy] == True
-    # Also, be sure to buy the exact amount in the Cash wallet, no more no less
-    # This ensures that the buys will be paid for by the earnings from the sells and NOT the user's added payment method
+    # After selling but before buying more, make sure to check that the user's cash wallet received the earnings from selling by calling user.get_cash_wallet_balance()
+    # Also, be sure to use user.buy_with_cash_payment_method() when buying
 
     pass
 
