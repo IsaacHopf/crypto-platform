@@ -3,6 +3,15 @@ The flask application package.
 """
 
 from flask import Flask
+
+from .site.views import site
+from .dashboard.views import dashboard
+from .admin.views import admin
+
 app = Flask(__name__)
 
-import crypto_platform.views
+app.register_blueprint(site)
+app.register_blueprint(dashboard)
+app.register_blueprint(admin)
+
+

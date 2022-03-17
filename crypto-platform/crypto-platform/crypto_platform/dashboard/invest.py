@@ -6,12 +6,10 @@ from flask import redirect, request
 import requests
 import json
 import time
-from crypto_platform.coinbasescripts.User import User
-from crypto_platform import views
+from crypto_platform.dashboard.User import User
 
 possible_basket = [['BTC', 0.5], ['ETH', 0.5]] # I think the baskets are best represented as lists in the code. When we set up the database, we can put the data into a list like this.
 another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['YFI', 0.2]]
-
 
 def make_initial_investment(user, basket, amount):
     """

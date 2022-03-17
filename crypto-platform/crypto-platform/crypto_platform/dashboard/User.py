@@ -18,12 +18,7 @@ class User(object):
 
         ######Test buy
         #print("BUY $2 of BTC")
-        #self.buy('BTC', 2)
-        #time.sleep(30)
-        #print("BTC Wallet: ")
-        #print(self.client.get_account('BTC'))
-        #print("USD Wallet: ")
-        #print(self.client.get_account('USD'))
+        #self.buy_with_bank_payment_method('BTC', 2)
 
     def __get_cash_payment_method_id(self):
         """Gets the user's Cash payment method. This payment method always exists and links directly to the user's Cash wallet (which is in their native currency)."""

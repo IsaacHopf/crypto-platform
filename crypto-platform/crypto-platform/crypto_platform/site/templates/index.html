@@ -3,12 +3,11 @@
 {% block content %}
 
 <body>
-    <link rel="stylesheet" href="crypto_platform\templates\StyleSheet1.css">
+    <link rel="stylesheet" href="crypto_platform\site\templates\StyleSheet1.css">
     <div class="jumbotron">
         <h1>Flask</h1>
         <p class="lead">Flask is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href=" {{ url_for('coinbase_login') }} " class="btn btn-primary btn-large">Connect to Coinbase! &raquo;</a></p>
-        <p><a href=" {{ url_for('testscripts') }} " class="btn btn-primary btn-large">TEST STUFFS &raquo;</a></p>
+        <p><a href=" {{ url_for('site.coinbase_login') }} " class="btn btn-primary btn-large">Connect to Coinbase! &raquo;</a></p>
     </div>
 
     <div class="row">
