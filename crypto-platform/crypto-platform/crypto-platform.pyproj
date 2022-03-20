@@ -28,60 +28,71 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="crypto_platform\coinbasescripts\connect.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="crypto_platform\coinbasescripts\invest.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="crypto_platform\coinbasescripts\__init__.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="crypto_platform\coinbasescripts\User.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="runserver.py" />
+    <Compile Include="crypto_platform\admin\views.py" />
+    <Compile Include="crypto_platform\admin\__init__.py" />
+    <Compile Include="crypto_platform\connect.py" />
+    <Compile Include="crypto_platform\dashboard\invest.py" />
+    <Compile Include="crypto_platform\dashboard\User.py" />
+    <Compile Include="crypto_platform\dashboard\views.py" />
+    <Compile Include="crypto_platform\dashboard\__init__.py" />
+    <Compile Include="crypto_platform\site\views.py" />
+    <Compile Include="crypto_platform\site\__init__.py" />
     <Compile Include="crypto_platform\__init__.py" />
-    <Compile Include="crypto_platform\views.py" />
+    <Compile Include="runserver.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="crypto_platform\" />
-    <Folder Include="crypto_platform\coinbasescripts\" />
-    <Folder Include="crypto_platform\static\" />
-    <Folder Include="crypto_platform\static\content\" />
-    <Folder Include="crypto_platform\static\fonts\" />
-    <Folder Include="crypto_platform\static\scripts\" />
-    <Folder Include="crypto_platform\templates\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="crypto_platform\templates\redirect.html" />
-    <Content Include="crypto_platform\templates\contact.html" />
+    <Content Include="crypto_platform\dashboard\static\content\bootstrap.css" />
+    <Content Include="crypto_platform\dashboard\static\content\bootstrap.min.css" />
+    <Content Include="crypto_platform\dashboard\static\content\site.css" />
+    <Content Include="crypto_platform\dashboard\static\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="crypto_platform\dashboard\static\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="crypto_platform\dashboard\static\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="crypto_platform\dashboard\static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="crypto_platform\dashboard\static\scripts\bootstrap.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\bootstrap.min.js" />
+    <None Include="crypto_platform\dashboard\static\scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\jquery-1.10.2.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\jquery-1.10.2.min.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\jquery-1.10.2.min.map" />
+    <None Include="crypto_platform\dashboard\static\scripts\jquery.validate-vsdoc.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\jquery.validate.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\jquery.validate.min.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\modernizr-2.6.2.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\respond.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\respond.min.js" />
+    <None Include="crypto_platform\dashboard\static\scripts\_references.js" />
+    <Content Include="crypto_platform\dashboard\templates\dashboard.html" />
+    <Content Include="crypto_platform\dashboard\templates\layout.html" />
+    <Content Include="crypto_platform\site\static\content\bootstrap.css" />
+    <Content Include="crypto_platform\site\static\content\bootstrap.min.css" />
+    <Content Include="crypto_platform\site\static\content\site.css" />
+    <Content Include="crypto_platform\site\static\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="crypto_platform\site\static\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="crypto_platform\site\static\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="crypto_platform\site\static\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="crypto_platform\site\static\scripts\_references.js" />
+    <Content Include="crypto_platform\site\static\scripts\bootstrap.js" />
+    <Content Include="crypto_platform\site\static\scripts\bootstrap.min.js" />
+    <None Include="crypto_platform\site\static\scripts\jquery.validate-vsdoc.js" />
+    <None Include="crypto_platform\site\static\scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="crypto_platform\site\static\scripts\jquery-1.10.2.js" />
+    <Content Include="crypto_platform\site\static\scripts\jquery-1.10.2.min.js" />
+    <Content Include="crypto_platform\site\static\scripts\jquery-1.10.2.min.map" />
+    <Content Include="crypto_platform\site\static\scripts\jquery.validate.js" />
+    <Content Include="crypto_platform\site\static\scripts\jquery.validate.min.js" />
+    <Content Include="crypto_platform\site\static\scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="crypto_platform\site\static\scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="crypto_platform\site\static\scripts\modernizr-2.6.2.js" />
+    <Content Include="crypto_platform\site\static\scripts\respond.js" />
+    <Content Include="crypto_platform\site\static\scripts\respond.min.js" />
+    <Content Include="crypto_platform\site\templates\about.html" />
+    <Content Include="crypto_platform\site\templates\contact.html" />
+    <Content Include="crypto_platform\site\templates\index.html" />
+    <Content Include="crypto_platform\site\templates\layout.html" />
+    <Content Include="crypto_platform\site\templates\StyleSheet1.css" />
     <Content Include="requirements.txt" />
-    <Content Include="crypto_platform\static\content\bootstrap.css" />
-    <Content Include="crypto_platform\static\content\bootstrap.min.css" />
-    <Content Include="crypto_platform\static\content\site.css" />
-    <Content Include="crypto_platform\static\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="crypto_platform\static\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="crypto_platform\static\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="crypto_platform\static\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="crypto_platform\static\scripts\bootstrap.js" />
-    <Content Include="crypto_platform\static\scripts\bootstrap.min.js" />
-    <Content Include="crypto_platform\static\scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="crypto_platform\static\scripts\jquery-1.10.2.js" />
-    <Content Include="crypto_platform\static\scripts\jquery-1.10.2.min.js" />
-    <Content Include="crypto_platform\static\scripts\jquery-1.10.2.min.map" />
-    <Content Include="crypto_platform\static\scripts\jquery.validate-vsdoc.js" />
-    <Content Include="crypto_platform\static\scripts\jquery.validate.js" />
-    <Content Include="crypto_platform\static\scripts\jquery.validate.min.js" />
-    <Content Include="crypto_platform\static\scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="crypto_platform\static\scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="crypto_platform\static\scripts\modernizr-2.6.2.js" />
-    <Content Include="crypto_platform\static\scripts\respond.js" />
-    <Content Include="crypto_platform\static\scripts\respond.min.js" />
-    <Content Include="crypto_platform\static\scripts\_references.js" />
-    <Content Include="crypto_platform\templates\about.html" />
-    <Content Include="crypto_platform\templates\index.html" />
-    <Content Include="crypto_platform\templates\layout.html" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -93,6 +104,22 @@
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
       <Architecture>X64</Architecture>
     </Interpreter>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="crypto_platform\" />
+    <Folder Include="crypto_platform\admin\" />
+    <Folder Include="crypto_platform\dashboard\" />
+    <Folder Include="crypto_platform\dashboard\static\" />
+    <Folder Include="crypto_platform\dashboard\static\content\" />
+    <Folder Include="crypto_platform\dashboard\static\fonts\" />
+    <Folder Include="crypto_platform\dashboard\static\scripts\" />
+    <Folder Include="crypto_platform\dashboard\templates\" />
+    <Folder Include="crypto_platform\site\" />
+    <Folder Include="crypto_platform\site\static\" />
+    <Folder Include="crypto_platform\site\static\content\" />
+    <Folder Include="crypto_platform\site\static\fonts\" />
+    <Folder Include="crypto_platform\site\static\scripts\" />
+    <Folder Include="crypto_platform\site\templates\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 

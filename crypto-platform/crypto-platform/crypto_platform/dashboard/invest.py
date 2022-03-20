@@ -6,8 +6,7 @@ from flask import redirect, request
 import requests
 import json
 import time
-from crypto_platform.coinbasescripts.User import User
-from crypto_platform import views
+from crypto_platform.dashboard.User import User
 from datetime import date
 from datetime import timedelta
 
@@ -89,4 +88,3 @@ def process_investments(user):
     print (f"the spot price is {spot_price}")
     print (all_crypto_prices)
     check_tax_loss_harvest(all_crypto_prices, user)
-
