@@ -8,7 +8,7 @@ from .site.views import site
 from .dashboard.views import dashboard
 from .admin.views import admin
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)
 
 app.register_blueprint(site)
 app.register_blueprint(dashboard)
