@@ -15,9 +15,6 @@ site = Blueprint('site', __name__,
 @site.route('/home')
 def home():
     """Renders the home page."""
-    from crypto_platform.dashboard.notify import send_email_notifications
-    send_email_notifications()
-
     return render_template(
         'index.html',
         title='Home Page',

@@ -5,7 +5,7 @@ from crypto_platform.models import UserModel
 from crypto_platform import mail
 from flask_mail import Message
 
-def __get_all_emails():
+def get_all_emails():
 	"""Gets the email of every user in the database."""
 	all_users = UserModel.query.all()
 	all_emails = []
@@ -15,14 +15,14 @@ def __get_all_emails():
 
 	return all_emails
 
-def send_email_notifications():
+def send_tax_loss_harvest_notifications():
 	"""Sends an email notification informing all users of potential for tax loss harvesting."""
-	recipients = __get_all_emails()
+	recipients = get_all_emails()
 
 	with mail.connect() as conn:
 		for recipient in recipients:
 			message = "Hello, your account has potential for tax loss harvesting. Please log in to check."
-			subject = 'Tax Loss Harvesting Potential'
+			subject = "Tax Loss Harvesting Potential"
 			msg = Message(recipients=[recipient],
 						  body=message,
 						  subject=subject)
