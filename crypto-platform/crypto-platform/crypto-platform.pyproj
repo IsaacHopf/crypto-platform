@@ -32,6 +32,9 @@
     <Compile Include="crypto_platform\admin\__init__.py" />
     <Compile Include="crypto_platform\connect.py" />
     <Compile Include="crypto_platform\dashboard\invest.py" />
+    <Compile Include="crypto_platform\dashboard\notify.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="crypto_platform\models.py">
       <SubType>Code</SubType>
     </Compile>
