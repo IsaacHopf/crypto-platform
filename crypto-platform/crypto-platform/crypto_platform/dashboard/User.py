@@ -1,6 +1,11 @@
+# For Coinbase
 from coinbase.wallet.client import OAuthClient
 import re
 import time
+
+# For the Database
+from crypto_platform.models import UserModel
+from crypto_platform import db
 
 class User(object):
     """Represents the user of our platform."""
@@ -9,16 +14,25 @@ class User(object):
         self.client = OAuthClient(tokens['access_token'], tokens['refresh_token']) # The client used to connect to the user's Coinbase account.
 
         self.current_user = self.client.get_current_user()
-        self.native_currency = self.current_user['native_currency']
+        self.coinbase_id = str(self.current_user['id'])
         self.email = self.current_user['email']
+        self.native_currency = self.current_user['native_currency']
+
+        if UserModel.query.get(self.coinbase_id) is None: # If the user does not exist in the database ...
+            self.__add_user_to_database() # add them.
 
         self.payment_methods = self.client.get_payment_methods()
         self.cash_payment_method_id = self.__get_cash_payment_method_id() # The id of the user's Cash payment method (which links to their Cash wallet).
         self.bank_payment_method_id = self.__get_bank_payment_method_id() # The id of the bank payment method the user added.
 
-        ######Test buy
-        #print("BUY $2 of BTC")
-        #self.buy_with_bank_payment_method('BTC', 2)
+    def __add_user_to_database(self):
+        """Adds the current user to the database."""
+        new_user = UserModel(
+            id = self.coinbase_id,
+            email = self.email)
+
+        db.session.add(new_user)
+        db.session.commit()
 
     def __get_cash_payment_method_id(self):
         """Gets the user's Cash payment method. This payment method always exists and links directly to the user's Cash wallet (which is in their native currency)."""
