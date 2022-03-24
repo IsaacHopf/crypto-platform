@@ -1,0 +1,71 @@
+INSTRUCTIONS FOR WORKING WITH THE DATABASE MANUALLY
+
+
+Note: To work with the database manually, you must open the Interactive Window by right clicking on 
+the python environment in the solution explorer and selecting "Open Interactive Window".
+
+Note: All instructions use the UserModel model from models.py as an example.
+
+
+How to Add a Table
+-------------------------------------------------------
+    from crypto_platform import db
+    from crypto_platform.models import UserModel
+    db.create_all()
+
+
+How to Update a Table
+-------------------------------------------------------
+CAUTION: This will delete all data in the database. To preserve data, you must implement Flask-Migrate
+at https://flask-migrate.readthedocs.io/en/latest/index.html.
+
+    from crypto_platform import db
+    db.drop_all()
+    from crypto_platform.models import UserModel
+    db.create_all()
+
+
+How to Add a Row
+-------------------------------------------------------
+from crypto_platform import db
+from crypto_platform.models import UserModel
+
+user = UserModel(
+    id = 'cab10d16-048a-40c6-9b51-5ac458d1e935',
+    email = 'testemail@gmail.com')
+
+db.session.add(user)
+db.session.commit()
+
+
+How to Select a Row or Rows
+-------------------------------------------------------
+from crypto_platform import db
+from crypto_platform.models import UserModel
+
+list_of_all_users = UserModel.query.all()
+list_of_users_with_specific_email = UserModel.query.filter_by(email='testemail@icloud.com').all()
+user_with_specific_id = UserModel.query.get('cab10d16-048a-40c6-9b51-5ac458d1e935')
+
+
+How to Edit a Row
+-------------------------------------------------------
+from crypto_platform import db
+from crypto_platform.models import UserModel
+
+user = UserModel.query.get('cab10d16-048a-40c6-9b51-5ac458d1e935')
+user.email = 'differenttestemail@gmail.com'
+
+db.session.add(user)
+db.session.commit()
+
+
+How to Delete a Row
+-------------------------------------------------------
+from crypto_platform import db
+from crypto_platform.models import UserModel
+
+user = UserModel.query.get('cab10d16-048a-40c6-9b51-5ac458d1e935')
+
+db.session.delete(user)
+db.session.commit()
