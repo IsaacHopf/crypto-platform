@@ -44,6 +44,9 @@
     <Compile Include="crypto_platform\site\views.py" />
     <Compile Include="crypto_platform\site\__init__.py" />
     <Compile Include="crypto_platform\__init__.py" />
+    <Compile Include="instance\mail-config.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="runserver.py" />
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +130,7 @@
     <Folder Include="crypto_platform\site\static\fonts\" />
     <Folder Include="crypto_platform\site\static\scripts\" />
     <Folder Include="crypto_platform\site\templates\" />
+    <Folder Include="instance\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 

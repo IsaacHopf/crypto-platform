@@ -4,7 +4,7 @@ The flask application package.
 
 from flask import Flask
 
-app = Flask(__name__, static_folder=None)
+app = Flask(__name__, static_folder=None, instance_relative_config=True)
 
 # Initialize the SQLite Datebase with SQLAlchemy
 import os
@@ -18,13 +18,7 @@ db = SQLAlchemy(app)
 # Initialize Flask-Mail and Configure the Sender Email
 from flask_mail import Mail
 
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_DEFAULT_SENDER'] = 'baskinthecrypto@gmail.com'
-app.config['MAIL_USERNAME'] = 'baskinthecrypto@gmail.com'
-app.config['MAIL_PASSWORD'] = 'ckzsxzyqprfekyok'
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+app.config.from_pyfile('mail-config.py')
 mail = Mail(app)
 
 # Register Blueprints
