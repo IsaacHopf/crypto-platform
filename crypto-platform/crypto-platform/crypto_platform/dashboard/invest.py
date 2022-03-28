@@ -54,6 +54,13 @@ def check_tax_loss_harvest(all_crypto_prices, user): # This is the function that
     print ("These are the days with potential to harvest:")
     print (potential_harvest_dates)
 
+def verify_tax_loss_harvest(user):
+    all_buys = user.client.get_buys(user.client.get_account('BTC')['id'])
+    for buy in all_buys["data"]:
+        print (buy["amount"])
+        print (buy["unit_price"]["amount"])
+
+
 def tax_loss_harvest(user): # This is the function that would run everytime the user activates it. Either by clicking a button, logging in, or withdrawing their investment.
     """Performs the tax-loss harvesting process."""
 
@@ -87,4 +94,6 @@ def process_investments(user):
     spot_price = get_spot_price('BTC-USD', '2022-3-2', user)
     print (f"the spot price is {spot_price}")
     print (all_crypto_prices)
+    verify_tax_loss_harvest(user)
+    time.sleep(30)
     check_tax_loss_harvest(all_crypto_prices, user)
