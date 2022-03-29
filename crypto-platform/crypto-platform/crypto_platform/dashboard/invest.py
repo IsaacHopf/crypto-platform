@@ -12,6 +12,7 @@ from datetime import timedelta
 
 all_crypto_prices = [['BTC', 0], ['ETH', 0], ['USDT', 0], ['LTC', 0]] #This list will contain every crypto we use and its price
 potential_harvest_dates = []
+user_buys = []
 
 possible_basket = [['BTC', 0.5], ['ETH', 0.5]] # I think the baskets are best represented as lists in the code. When we set up the database, we can put the data into a list like this.
 another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['YFI', 0.2]]
@@ -57,9 +58,13 @@ def check_tax_loss_harvest(all_crypto_prices, user): # This is the function that
 def verify_tax_loss_harvest(user):
     all_buys = user.client.get_buys(user.client.get_account('BTC')['id'])
     for buy in all_buys["data"]:
-        print (buy["amount"])
-        print (buy["unit_price"]["amount"])
 
+        date = buy["created_at"]
+        amount = buy["amount"]
+        print (amount)
+        unit_price = buy["unit_price"]["amount"]
+        user_buys.append(['BTC', date, amount, unit_price])
+    print (user_buys)
 
 def tax_loss_harvest(user): # This is the function that would run everytime the user activates it. Either by clicking a button, logging in, or withdrawing their investment.
     """Performs the tax-loss harvesting process."""
