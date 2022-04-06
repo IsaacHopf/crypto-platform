@@ -27,12 +27,13 @@ def coinbase_callback():
     if login_response_code == None or login_response_state == None: # If the login reponses are None, then the User did not log in.
         raise AttributeError('User has not logged in!')
     else:
-        if login_response_state == state: # If 'login_response_state' and 'state' do not match, the login response should not be trusted.
+        if login_response_state == state:
+            # If login response is trustworthy
             post_data = {'grant_type': 'authorization_code', 'code': login_response_code, 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri } # The data for the callback to Coinbase
             callback_response = requests.post('https://api.coinbase.com/oauth/token', data=post_data)
             access_token = callback_response.json()['access_token']
             refresh_token = callback_response.json()['refresh_token']
             return {'access_token': access_token, 'refresh_token': refresh_token}
         else:
-            print('redirect user back to home page and say an error has occurred, please try logging in again')
-            raise Exception('Login response is untrustworthy')
+            # If login response is untrustworthy
+            coinbase_login()

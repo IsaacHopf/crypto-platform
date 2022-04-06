@@ -2,6 +2,7 @@
 from coinbase.wallet.client import OAuthClient
 import re
 import time
+from flask import flash, session
 
 # For the Database
 from crypto_platform.models import UserModel
@@ -11,7 +12,14 @@ class User(object):
     """Represents the user of our platform."""
 
     def __init__(self, tokens):
-        self.client = OAuthClient(tokens['access_token'], tokens['refresh_token']) # The client used to connect to the user's Coinbase account.
+        try:
+            self.client = OAuthClient(tokens['access_token'], tokens['refresh_token']) # The client used to connect to the user's Coinbase account.
+        except RateLimitExceededError as e:
+            self.__handle_rate_limit_exceeded_exception(e)
+        except UnverifiedEmailError:
+            flash('Please verify your Coinbase email before proceeding.', error)
+        except Exception as e:
+            self.__handle_exception(e)
 
         self.current_user = self.client.get_current_user()
         self.coinbase_id = str(self.current_user['id'])
@@ -23,7 +31,10 @@ class User(object):
 
         self.payment_methods = self.client.get_payment_methods()
         self.cash_payment_method_id = self.__get_cash_payment_method_id() # The id of the user's Cash payment method (which links to their Cash wallet).
-        self.bank_payment_method_id = self.__get_bank_payment_method_id() # The id of the bank payment method the user added.
+        try:
+            self.bank_payment_method_id = self.__get_bank_payment_method_id() # The id of the bank payment method the user added.
+        except:
+            flash('Please add your bank account as a payment method on Coinbase before proceeding.', error)
 
     def __add_user_to_database(self):
         """Adds the current user to the database."""
@@ -39,7 +50,6 @@ class User(object):
         for payment_method in self.payment_methods['data']:
             if re.match("Cash", payment_method['name']) is not None: # The name of the Cash payment method always starts with "Cash".
                 return payment_method['id']
-            # There will always be a Cash account, so do I need any error handling here?
 
     def __get_bank_payment_method_id(self):
         """Gets the bank payment method the user added. If they have not added a bank payment method, asks them to add one."""
@@ -47,11 +57,8 @@ class User(object):
             if re.search("bank_account", payment_method['type']) is not None and payment_method['allow_withdraw'] == True: # The type of a bank payment method always contains "bank_account"
                 return payment_method['id']
 
-        # If the user hasn't added a payment method
-        print("Please add your Bank account as a payment method.")
-        # Add code for UI or call function that handles this
-        # Make sure that user.added_payment_method is defined after the user adds the payment method
-        # Could ask them to log in again
+        # If the user has not added their bank payment method
+        raise Exception('User has not added bank payment method!')
 
     def buy_with_cash_payment_method(self, crypto, total):
         """
@@ -67,10 +74,10 @@ class User(object):
                             total = total, # Buys the specified total (a portion of this total is used for fees) ...
                             currency = self.native_currency, # in the user's native currency.
                             payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
-        except RateLimitExceededError:
-            print("The buy was too large. Please check your Account Limits on Coinbase or make a smaller investment.")
-        except:
-            print("The buy did not process. Please try again.")
+        except RateLimitExceededError as e:
+            self.__handle_rate_limit_exceeded_exception(e)
+        except Exception as e:
+            self.__handle_exception(e)
 
     def buy_with_bank_payment_method(self, crypto, total):
         """
@@ -86,10 +93,10 @@ class User(object):
                             total = total, # Buys the specified total (a portion of this total is used for fees) ...
                             currency = self.native_currency, # in the user's native currency.
                             payment_method = self.bank_payment_method_id) # Pays with the user's bank payment method.
-        except RateLimitExceededError:
-            print("The buy was too large. Please check your Account Limits on Coinbase or make a smaller investment.")
-        except:
-            print("The buy did not process. Please try again.")
+        except RateLimitExceededError as e:
+            self.__handle_rate_limit_exceeded_exception(e)
+        except Exception as e:
+            self.__handle_exception(e)
 
     def test_buy(self, crypto, total):
         """
@@ -121,8 +128,10 @@ class User(object):
                              amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
                              currency = self.native_currency, # in the user's native currency.
                              payment_method = self.cash_payment_method_id) # Deposits the money into the user's Cash wallet.
-        except:
-            print("The sell did not process. Please try again.")
+        except RateLimitExceededError as e:
+            self.__handle_rate_limit_exceeded_exception(e)
+        except Exception as e:
+            self.__handle_exception(e)
 
     def withdraw(self, amount):
         """
@@ -137,8 +146,10 @@ class User(object):
                                  amount = amount, # Withdraws the specified amount ...
                                  currency = self.native_currency, # in the user's native currency.
                                  payment_method = self.bank_payment_method_id) # Deposits the money into the user's bank payment method.
-        except:
-            print("The withdraw did not process. Please try again.")
+        except RateLimitExceededError as e:
+            self.__handle_rate_limit_exceeded_exception(e)
+        except Exception as e:
+            self.__handle_exception(e)
 
     def get_cash_wallet_balance(self):
         """
@@ -150,5 +161,12 @@ class User(object):
         return balance
 
     def logout(self):
-        """Logs out the user by revoking the access token."""
+        """Logs out the user by deleting their tokens session variable and revoking their access token."""
+        session.pop('tokens', None)
         self.client.revoke()
+
+    def __handle_exception(e):
+        flash('Oops, an error occurred. Error Code: ' + str(e), error)
+    
+    def __handle_rate_limit_exceeded_exception(e):
+        flash('Oops, an error occurred, please try again in a minute. Error Code: ' + str(e), error)
