@@ -28,5 +28,8 @@ def send_tax_loss_harvest_notifications():
 						  subject=subject)
 			conn.send(msg)
 
-def send_error_notification():
-
+def send_transaction_error_notification(recipient, e):
+	msg = Message("An Error Occurred with your Transaction",
+				  recipients=[recipient])
+	msg.body = "An error occurred while processing your transaction. Error Code: " + str(e) + ". Please contact support to proceed."
+	mail.send(msg)

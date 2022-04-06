@@ -38,8 +38,7 @@ def home():
 
 @dashboard.route('/testscripts')
 def testscripts():
-    user.sell('BTC', 2)
-    #invest.process_investments(user)
+    invest.process_investments(user)
 
     return render_template(
         'dashboard.html',

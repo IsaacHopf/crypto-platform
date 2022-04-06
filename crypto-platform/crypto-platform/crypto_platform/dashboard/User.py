@@ -1,20 +1,18 @@
 # For Coinbase
 from coinbase.wallet.client import OAuthClient
 import re
-import time
 
-# For Coinbase Exception Handling
+# For Exception Handling
 from coinbase.wallet.error import RateLimitExceededError, UnverifiedEmailError
-from  datetime import datetime, timedelta
 from flask import flash, session
+from  datetime import datetime, timedelta
 import threading
 from crypto_platform import connect
+from crypto_platform.dashboard import notify 
 
 # For the Database
 from crypto_platform.models import UserModel
 from crypto_platform import db
-
-processing_transaction = False
 
 class User(object):
     """Represents the user of our platform."""
@@ -96,12 +94,13 @@ class User(object):
                             payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
 
                 except Exception as e: # If there was an exception ...
-                    if retries < 30:
+                    if retries < 29:
                         retries += 1
                         timer = threading.Timer(60.0, transaction) # try again in a minute.
                         timer.start()
-                    else: # If tried 30 times ...
-                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash an error.
+                    else: # If tried 29 times ...
+                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash the error ...
+                        notify.send_transaction_error_notification(self.email, e) # and send an email notification.
 
         transaction()
 
@@ -133,14 +132,14 @@ class User(object):
                                     payment_method = self.bank_payment_method_id) # Pays with the user's bank payment method.
 
                 except Exception as e: # If there was an exception ...
-                    if retries < 30:
+                    if retries < 29:
                         retries += 1
                         timer = threading.Timer(60.0, transaction) # try again in a minute.
                         timer.start()
-                    else: # If tried 30 times ...
-                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash an error.
+                    else: # If tried 29 times ...
+                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash the error ...
+                        notify.send_transaction_error_notification(self.email, e) # and send an email notification.
 
-            
         transaction()    
 
     def test_buy(self, crypto, total):
@@ -187,12 +186,13 @@ class User(object):
                                      payment_method = self.cash_payment_method_id) # Deposits the money into the user's Cash wallet.
 
                 except Exception as e: # If there was an exception ...
-                    if retries < 30:
+                    if retries < 29:
                         retries += 1
                         timer = threading.Timer(60.0, transaction) # try again in a minute.
                         timer.start()
-                    else: # If tried 30 times ...
-                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash an error.
+                    else: # If tried 29 times ...
+                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash the error ...
+                        notify.send_transaction_error_notification(self.email, e) # and send an email notification.
 
         transaction()
 
@@ -223,12 +223,13 @@ class User(object):
                                  payment_method = self.bank_payment_method_id) # Deposits the money into the user's bank payment method.
 
                 except Exception as e: # If there was an exception ...
-                    if retries < 30:
+                    if retries < 29:
                         retries += 1
                         timer = threading.Timer(60.0, transaction) # try again in a minute.
                         timer.start()
-                    else: # If tried 30 times ...
-                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash an error.
+                    else: # If tried 29 times ...
+                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash the error ...
+                        notify.send_transaction_error_notification(self.email, e) # and send an email notification.
 
         transaction()
 
