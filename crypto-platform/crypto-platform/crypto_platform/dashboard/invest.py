@@ -2,7 +2,7 @@
 Scripts for initial investing and tax-loss harvesting.
 """
 import uuid
-from flask import redirect, request
+from flask import redirect, request, flash
 import requests
 import json
 import time
@@ -34,6 +34,7 @@ def make_initial_investment(user, basket, amount):
         crypto_amount = amount * percent # The amount of this cryptocurrency to buy.
 
         user.buy_with_bank_payment_method(crypto, crypto_amount)
+        flash('Your investment has been processed! You should recieve several emails from Coinbase.')
 
 
 

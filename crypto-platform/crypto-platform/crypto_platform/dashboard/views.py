@@ -3,6 +3,7 @@ Routes and views for the dashboard pages.
 """
 
 from flask import Blueprint, render_template, session
+from datetime import datetime
 
 from crypto_platform import connect
 from crypto_platform.dashboard import invest
@@ -21,6 +22,7 @@ def home():
         try: # If the user has just logged in ...
             tokens = connect.coinbase_callback() # callback to Coinbase to get the tokens ...
             session['tokens'] = tokens # and store the tokens in a session variable.
+            session['tokens_created_at'] = datetime.now()
         except: # If the user has not logged in or their tokens have expired ...
             return connect.coinbase_login() # redirect them to login.
 
@@ -36,7 +38,8 @@ def home():
 
 @dashboard.route('/testscripts')
 def testscripts():
-    invest.process_investments(user)
+    user.sell('BTC', 2)
+    #invest.process_investments(user)
 
     return render_template(
         'dashboard.html',

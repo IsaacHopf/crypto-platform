@@ -2,11 +2,19 @@
 from coinbase.wallet.client import OAuthClient
 import re
 import time
+
+# For Coinbase Exception Handling
+from coinbase.wallet.error import RateLimitExceededError, UnverifiedEmailError
+from  datetime import datetime, timedelta
 from flask import flash, session
+import threading
+from crypto_platform import connect
 
 # For the Database
 from crypto_platform.models import UserModel
 from crypto_platform import db
+
+processing_transaction = False
 
 class User(object):
     """Represents the user of our platform."""
@@ -15,11 +23,11 @@ class User(object):
         try:
             self.client = OAuthClient(tokens['access_token'], tokens['refresh_token']) # The client used to connect to the user's Coinbase account.
         except RateLimitExceededError as e:
-            self.__handle_rate_limit_exceeded_exception(e)
+            flash('Oops, an error occurred, please try again in a minute. Error Code: ' + str(e), 'error')
         except UnverifiedEmailError:
-            flash('Please verify your Coinbase email before proceeding.', error)
+            flash('Please verify your Coinbase email before proceeding.', 'error')
         except Exception as e:
-            self.__handle_exception(e)
+            flash('Oops, an error occurred. Error Code: ' + str(e), 'error')
 
         self.current_user = self.client.get_current_user()
         self.coinbase_id = str(self.current_user['id'])
@@ -34,7 +42,7 @@ class User(object):
         try:
             self.bank_payment_method_id = self.__get_bank_payment_method_id() # The id of the bank payment method the user added.
         except:
-            flash('Please add your bank account as a payment method on Coinbase before proceeding.', error)
+            flash('Please add your bank account as a payment method on Coinbase before proceeding.', 'error')
 
     def __add_user_to_database(self):
         """Adds the current user to the database."""
@@ -67,17 +75,35 @@ class User(object):
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         total: the total that will be spent (in the user's native currency)
         """
-        account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
+        retries = 0
 
-        try:
-            self.client.buy(account_id, # Buys the specified cryptocurrency.
+        def transaction():
+            if 'tokens' not in session: # If the user's tokens have expired ...
+                connect.coinbase_login # redirect them to login.
+
+            elif (datetime.now() - session['tokens_created_at'] > timedelta(hours=1.5)): # If the user's tokens are close to expiring
+                self.client.refresh() # refresh them.
+                session['tokens_created_at'] = datetime.now()
+                transaction()
+
+            else:
+                try:
+                    account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
+
+                    self.client.buy(account_id, # Buys the specified cryptocurrency.
                             total = total, # Buys the specified total (a portion of this total is used for fees) ...
                             currency = self.native_currency, # in the user's native currency.
                             payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
-        except RateLimitExceededError as e:
-            self.__handle_rate_limit_exceeded_exception(e)
-        except Exception as e:
-            self.__handle_exception(e)
+
+                except Exception as e: # If there was an exception ...
+                    if retries < 30:
+                        retries += 1
+                        timer = threading.Timer(60.0, transaction) # try again in a minute.
+                        timer.start()
+                    else: # If tried 30 times ...
+                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash an error.
+
+        transaction()
 
     def buy_with_bank_payment_method(self, crypto, total):
         """
@@ -86,17 +112,36 @@ class User(object):
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         total: the total that will be spent (in the user's native currency)
         """
-        account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
+        retries = 0
 
-        try:
-            self.client.buy(account_id, # Buys the specified cryptocurrency.
-                            total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                            currency = self.native_currency, # in the user's native currency.
-                            payment_method = self.bank_payment_method_id) # Pays with the user's bank payment method.
-        except RateLimitExceededError as e:
-            self.__handle_rate_limit_exceeded_exception(e)
-        except Exception as e:
-            self.__handle_exception(e)
+        def transaction():
+            if 'tokens' not in session: # If the user's tokens have expired ...
+                connect.coinbase_login # redirect them to login.
+
+            elif (datetime.now() - session['tokens_created_at'] > timedelta(hours=1.5)): # If the user's tokens are close to expiring
+                self.client.refresh() # refresh them.
+                session['tokens_created_at'] = datetime.now()
+                transaction()
+
+            else:
+                try:
+                    account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
+
+                    self.client.buy(account_id, # Buys the specified cryptocurrency.
+                                    total = total, # Buys the specified total (a portion of this total is used for fees) ...
+                                    currency = self.native_currency, # in the user's native currency.
+                                    payment_method = self.bank_payment_method_id) # Pays with the user's bank payment method.
+
+                except Exception as e: # If there was an exception ...
+                    if retries < 30:
+                        retries += 1
+                        timer = threading.Timer(60.0, transaction) # try again in a minute.
+                        timer.start()
+                    else: # If tried 30 times ...
+                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash an error.
+
+            
+        transaction()    
 
     def test_buy(self, crypto, total):
         """
@@ -121,17 +166,35 @@ class User(object):
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         amount: the amount to sell (in the user's native currency)
         """
-        account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
+        retries = 0
 
-        try:
-            self.client.sell(account_id, # Sells the specified cryptocurreny.
-                             amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
-                             currency = self.native_currency, # in the user's native currency.
-                             payment_method = self.cash_payment_method_id) # Deposits the money into the user's Cash wallet.
-        except RateLimitExceededError as e:
-            self.__handle_rate_limit_exceeded_exception(e)
-        except Exception as e:
-            self.__handle_exception(e)
+        def transaction():
+            if 'tokens' not in session: # If the user's tokens have expired ...
+                connect.coinbase_login # redirect them to login.
+
+            elif (datetime.now() - session['tokens_created_at'] > timedelta(hours=1.5)): # If the user's tokens are close to expiring
+                self.client.refresh() # refresh them.
+                session['tokens_created_at'] = datetime.now()
+                transaction()
+
+            else:
+                try:
+                    account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
+
+                    self.client.sell(account_id, # Sells the specified cryptocurreny.
+                                     amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
+                                     currency = self.native_currency, # in the user's native currency.
+                                     payment_method = self.cash_payment_method_id) # Deposits the money into the user's Cash wallet.
+
+                except Exception as e: # If there was an exception ...
+                    if retries < 30:
+                        retries += 1
+                        timer = threading.Timer(60.0, transaction) # try again in a minute.
+                        timer.start()
+                    else: # If tried 30 times ...
+                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash an error.
+
+        transaction()
 
     def withdraw(self, amount):
         """
@@ -139,17 +202,35 @@ class User(object):
 
         amount: the amount to withdraw (in the user's native currency)
         """
-        account_id = self.client.get_account(self.native_currency)['id'] # Finds the user's Cash wallet.
+        retries = 0
 
-        try:
-            self.client.withdraw(account_id, # Withdraws from the user's Cash wallet.
+        def transaction():
+            if 'tokens' not in session: # If the user's tokens have expired ...
+                connect.coinbase_login # redirect them to login.
+
+            elif (datetime.now() - session['tokens_created_at'] > timedelta(hours=1.5)): # If the user's tokens are close to expiring
+                self.client.refresh() # refresh them.
+                session['tokens_created_at'] = datetime.now()
+                transaction()
+
+            else:
+                try:
+                    account_id = self.client.get_account(self.native_currency)['id'] # Finds the user's Cash wallet.
+
+                    self.client.withdraw(account_id, # Withdraws from the user's Cash wallet.
                                  amount = amount, # Withdraws the specified amount ...
                                  currency = self.native_currency, # in the user's native currency.
                                  payment_method = self.bank_payment_method_id) # Deposits the money into the user's bank payment method.
-        except RateLimitExceededError as e:
-            self.__handle_rate_limit_exceeded_exception(e)
-        except Exception as e:
-            self.__handle_exception(e)
+
+                except Exception as e: # If there was an exception ...
+                    if retries < 30:
+                        retries += 1
+                        timer = threading.Timer(60.0, transaction) # try again in a minute.
+                        timer.start()
+                    else: # If tried 30 times ...
+                        flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash an error.
+
+        transaction()
 
     def get_cash_wallet_balance(self):
         """
@@ -164,9 +245,3 @@ class User(object):
         """Logs out the user by deleting their tokens session variable and revoking their access token."""
         session.pop('tokens', None)
         self.client.revoke()
-
-    def __handle_exception(e):
-        flash('Oops, an error occurred. Error Code: ' + str(e), error)
-    
-    def __handle_rate_limit_exceeded_exception(e):
-        flash('Oops, an error occurred, please try again in a minute. Error Code: ' + str(e), error)

@@ -27,3 +27,6 @@ def send_tax_loss_harvest_notifications():
 						  body=message,
 						  subject=subject)
 			conn.send(msg)
+
+def send_error_notification():
+

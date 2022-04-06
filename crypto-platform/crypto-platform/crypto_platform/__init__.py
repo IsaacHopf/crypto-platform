@@ -11,7 +11,7 @@ import uuid
 from datetime import timedelta
 
 app.secret_key = str(uuid.uuid4())
-app.permanent_session_lifetime = timedelta(minutes=120) # The Coinbase tokens expire in 2 hours
+app.permanent_session_lifetime = timedelta(hours=2) # The Coinbase tokens expire in 2 hours
 
 # Initialize the SQLite Datebase with SQLAlchemy
 import os
