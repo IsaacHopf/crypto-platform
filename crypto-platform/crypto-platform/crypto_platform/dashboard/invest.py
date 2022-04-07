@@ -19,11 +19,11 @@ user_buys = []
 possible_basket = [['BTC', 0.5], ['ETH', 0.5]] # I think the baskets are best represented as lists in the code. When we set up the database, we can put the data into a list like this.
 another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['YFI', 0.2]]
 
-basket = [['BTC', 1, 45000]]
-basket_1 = [['BTC', 0.4, 45000], ['ETH', 0.3, 3000], ['LTC', 0.2, 125], ['XRP', 0.1, 1]]
-basket_2 = [['BTC', 0.3, 45000], ['ETH', 0.4, 3000], ['LTC', 0.2, 125], ['DOT', 0.1, 22]]
-basket_3 = [['BTC', 0.5, 45000], ['ETH', 0.2, 3000], ['LTC', 0.15, 125], ['DOT', 0.15, 22]]
-basket_4 = [['BTC', 0.3, 45000], ['ETH', 0.4, 3000], ['LTC', 0.15, 125], ['XRP', 0.15, 22]]
+basket = [['BTC', 1]]
+basket_1 = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['XRP', 0.1]]
+basket_2 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.2], ['DOT', 0.1]]
+basket_3 = [['BTC', 0.5], ['ETH', 0.2], ['LTC', 0.15], ['DOT', 0.15]]
+basket_4 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.15], ['XRP', 0.15]]
 #all_baskets = [basket_1, basket_2, basket_3, basket_4]
 all_baskets = [basket]
 
@@ -127,9 +127,15 @@ def predict_tax_loss_harvest(all_crypto_prices, user): # This is the function th
 
 
 
-def verify_tax_loss_harvest(user):
-
+def harvest(user, all_crypto_prices):
+    
+    all_baskets = get_baskets()
     basket = combine_baskets(all_baskets)
+
+    for coin in basket:
+        for price in all_crypto_prices:
+            if coin[0] == price[0]:
+                coin.append(price[1])
 
     for coin in basket:
         user_buys = get_user_buys(user)
@@ -161,6 +167,11 @@ def verify_tax_loss_harvest(user):
     basket[4].append(dot_net_losses)"""
 
     trades = get_trades(basket)
+
+    #will pull baskets from the database
+def get_baskets():
+    baskets = [basket]
+    return baskets;
 
 def combine_baskets(all_baskets):
 
@@ -368,7 +379,7 @@ def get_one_price(crypto): #This function will get the price of one crypto curre
     response = requests.get(request_url)
     data = response.json()
     price = data["data"]["amount"] #price of the crypto
-    return price
+    return float(price)
 
 def get_spot_price(currency_pair, date, user): #currency_pair must be in format like 'BTC-USD' and date must be in format like '2022-3-2'
     spot_price = user.client.get_spot_price(currency_pair=currency_pair, date=date)
@@ -381,6 +392,6 @@ def process_investments(user):
     spot_price = get_spot_price('BTC-USD', '2022-3-2', user)
     print (f"the spot price is {spot_price}")
     print (all_crypto_prices)
-    verify_tax_loss_harvest(user)
+    harvest(user, all_crypto_prices)
     time.sleep(30)
     predict_tax_loss_harvest(all_crypto_prices, user)
