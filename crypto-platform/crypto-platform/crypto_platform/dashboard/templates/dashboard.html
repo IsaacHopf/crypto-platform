@@ -2,11 +2,19 @@
 
 {% block content %}
 
+<link rel="stylesheet" href="{{ url_for('.static', filename='content/StyleSheet1.css') }}" />
+
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
 <p><a href=" {{ url_for('dashboard.testscripts') }} " class="btn btn-primary btn-large">TEST STUFFS &raquo;</a></p>
 
-<p>Use this area to provide additional information.</p>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <h4 class="error-popup">{{ message }}</h4>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 {% endblock %}

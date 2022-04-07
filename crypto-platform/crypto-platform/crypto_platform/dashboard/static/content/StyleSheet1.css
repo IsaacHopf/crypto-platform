@@ -1,0 +1,15 @@
+﻿body {
+    background-color: #708090;
+    color: red;
+}
+
+.jumbotron {
+    color: red;
+}
+
+.error-popup {
+    color: white;
+    background-color: lightcoral;
+    border-radius: 0.5rem;
+    padding: 2rem;
+}

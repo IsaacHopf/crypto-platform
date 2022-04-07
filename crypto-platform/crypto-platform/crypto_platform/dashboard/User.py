@@ -21,7 +21,7 @@ class User(object):
         try:
             self.client = OAuthClient(tokens['access_token'], tokens['refresh_token']) # The client used to connect to the user's Coinbase account.
         except RateLimitExceededError as e:
-            flash('Oops, an error occurred, please try again in a minute. Error Code: ' + str(e), 'error')
+            flash('Oops, an error occurred, please try logging in again in a minute. Error Code: ' + str(e), 'error')
         except UnverifiedEmailError:
             flash('Please verify your Coinbase email before proceeding.', 'error')
         except Exception as e:

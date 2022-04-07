@@ -99,7 +99,7 @@
     <Content Include="crypto_platform\site\templates\contact.html" />
     <Content Include="crypto_platform\site\templates\index.html" />
     <Content Include="crypto_platform\site\templates\layout.html" />
-    <Content Include="crypto_platform\site\templates\StyleSheet1.css" />
+    <Content Include="crypto_platform\dashboard\static\content\StyleSheet1.css" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
