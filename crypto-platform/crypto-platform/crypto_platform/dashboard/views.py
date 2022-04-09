@@ -2,7 +2,7 @@
 Routes and views for the dashboard pages.
 """
 
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, request
 from datetime import datetime
 
 from crypto_platform import connect
@@ -28,6 +28,20 @@ def home():
 
     global user
     user = User(tokens)
+
+    return render_template(
+        'dashboard.html',
+        title='Dashboard',
+        #year=datetime.now().year,
+        message='Your application description page.'
+    )
+
+@dashboard.route('/', methods=['POST'])
+def home_post():
+    selected_basket = request.form['baskets']
+    investment_amount = request.form['investment-amount']
+    print('SELECTED BASKET: ' + selected_basket)
+    print('INVESTMENT AMOUNT: ' + investment_amount)
 
     return render_template(
         'dashboard.html',

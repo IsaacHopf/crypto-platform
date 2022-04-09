@@ -8,7 +8,26 @@
 <h3>{{ message }}</h3>
 
 <!--Basket Selection Div-->
-<div></div>
+<div style="margin-top: 5rem; margin-bottom: 5rem;">
+    START Basket Selection Form
+
+    <form method="POST">
+        <h3>Basket Selection</h3>
+        <input type="radio" name="baskets" id="basket1" value="Basket 1" />
+        <label for="basket1">Basket 1</label><br />
+        <!--<input type="radio" name="baskets" id="basket2" value="Basket 2" />
+        <label for="basket2">Basket 2</label><br />
+        <input type="radio" name="baskets" id="basket3" value="Basket 3" />
+        <label for="basket3">Basket 3</label><br />-->
+
+        <h3>Investment Amount</h3>
+        <input type="text" name="investment-amount" style="display: block; margin-bottom: 1rem;" />
+
+        <button type="submit" class="btn-primary" style="margin-bottom: 1rem;">SUBMIT</button>
+    </form> 
+    
+    END Basket Selection Form
+</div>
 
 <!--Tax Loss Harvesting Div-->
 <div></div>
@@ -18,7 +37,7 @@
 {% with messages = get_flashed_messages() %}
     {% if messages %}
         {% for message in messages %}
-            <h4 class="error-popup">{{ message }}</h4>
+<h4 class="error-popup">{{ message }}</h4>
         {% endfor %}
     {% endif %}
 {% endwith %}
