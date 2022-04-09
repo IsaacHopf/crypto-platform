@@ -47,7 +47,8 @@ def home_post():
         'dashboard.html',
         title='Dashboard',
         #year=datetime.now().year,
-        message='Your application description page.'
+        message='Your application description page.',
+
     )
 
 @dashboard.route('/testscripts')
@@ -60,4 +61,13 @@ def testscripts():
         year=datetime.now().year
     )
 
+@dashboard.route('/checkharvest')
+def checkharvest():
+
+    return render_template(
+        'dashboard.html',
+        title='Dashboard',
+        #year=datetime.now().year,
+        data = [['BTC', 0.00023333, 'LTC'], ['ETH', 0.0053333, 'DOT']]
+    )
 

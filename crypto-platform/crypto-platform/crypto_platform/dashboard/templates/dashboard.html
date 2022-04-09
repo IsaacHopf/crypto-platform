@@ -30,7 +30,31 @@
 </div>
 
 <!--Tax Loss Harvesting Div-->
-<div></div>
+<div>
+
+    <h1>Tax Loss Harvesting</h1>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">SELL</th>
+                <th scope="col">Amount</th>
+                <th scope="col">BUY</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for row in data %}
+            <tr>
+                {% for cell in row %}
+                <td> {{ cell }} </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large">check for harvest potential&raquo;</a></p>
+
+</div>
 
 <p><a href=" {{ url_for('dashboard.testscripts') }} " class="btn btn-primary btn-large">TEST STUFFS &raquo;</a></p>
 

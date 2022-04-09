@@ -20,10 +20,10 @@ possible_basket = [['BTC', 0.5], ['ETH', 0.5]] # I think the baskets are best re
 another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['YFI', 0.2]]
 
 basket = [['BTC', 1]]
-basket_1 = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['XRP', 0.1]]
-basket_2 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.2], ['DOT', 0.1]]
-basket_3 = [['BTC', 0.5], ['ETH', 0.2], ['LTC', 0.15], ['DOT', 0.15]]
-basket_4 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.15], ['XRP', 0.15]]
+#basket_1 = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['XRP', 0.1]]
+#basket_2 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.2], ['DOT', 0.1]]
+#basket_3 = [['BTC', 0.5], ['ETH', 0.2], ['LTC', 0.15], ['DOT', 0.15]]
+#basket_4 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.15], ['XRP', 0.15]]
 #all_baskets = [basket_1, basket_2, basket_3, basket_4]
 all_baskets = [basket]
 
@@ -102,28 +102,24 @@ def make_initial_investment(user, basket, amount):
 
 
 
-def predict_tax_loss_harvest(all_crypto_prices, user): # This is the function that we would run periodically to determine if we will send a notification to our users
+def predict_loss(all_crypto_prices, user): # This is the function that we would run periodically to determine if we will send a notification to our users
     """Checks potential for tax-loss harvesting."""
     today = date.today()
     threshold = -0.1
-    print("Today is: ", today)
 
+    #get dates where there is potential to harvest
     for crypto_price in all_crypto_prices: #loop through every currency
-        print (f"the current price today for {crypto_price[0]} is {crypto_price[1]}")
         for i in range(365): #loop through the previous year
             loop_day = today - timedelta(days = i)
             spot_price = get_spot_price(crypto_price[0]+'-USD', loop_day, user)
             amount = float(spot_price["amount"])
-            print (f"the spot price was {amount} on {loop_day}")
             change_in_price = float(crypto_price[1]) - (amount) 
-            print (f"the change in price was: {change_in_price}")
             if ((change_in_price/amount) <= threshold):
-                print ("there is potential for harvesting")
                 potential_harvest_dates.append([crypto_price[0], loop_day])
+
     print ("............................................")
     print ("These are the days with potential to harvest:")
     print (potential_harvest_dates)
-
 
 
 
@@ -394,4 +390,4 @@ def process_investments(user):
     print (all_crypto_prices)
     harvest(user, all_crypto_prices)
     time.sleep(30)
-    predict_tax_loss_harvest(all_crypto_prices, user)
+    predict_loss(all_crypto_prices, user), ['XRP', 0], ['DOT', 0]
