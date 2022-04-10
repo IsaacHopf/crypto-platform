@@ -33,7 +33,9 @@ def home():
         'dashboard.html',
         title='Dashboard',
         #year=datetime.now().year,
-        message='Your application description page.'
+        message='Your application description page.',
+        step_one_visibility = '',
+        step_two_visibility = 'hidden'
     )
 
 @dashboard.route('/', methods=['POST'])
@@ -69,6 +71,8 @@ def checkharvest():
         'dashboard.html',
         title='Dashboard',
         #year=datetime.now().year,
-        data=data
+        data=data,
+        step_one_visibility = 'hidden',
+        step_two_visibility = ''
     )
 
