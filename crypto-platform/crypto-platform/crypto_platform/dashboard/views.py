@@ -63,11 +63,12 @@ def testscripts():
 
 @dashboard.route('/checkharvest')
 def checkharvest():
+    data = invest.process_investments(user)
 
     return render_template(
         'dashboard.html',
         title='Dashboard',
         #year=datetime.now().year,
-        data = [['BTC', 0.00023333, 'LTC'], ['ETH', 0.0053333, 'DOT']]
+        data=data
     )
 

@@ -12,7 +12,7 @@ from crypto_platform.dashboard.User import User
 from datetime import date
 from datetime import timedelta
 
-all_crypto_prices = [['BTC', 0], ['ETH', 0], ['USDT', 0], ['LTC', 0]] #This list will contain every crypto we use and its price
+all_crypto_prices = [['BTC', 0], ['ETH', 0], ['USDT', 0], ['LTC', 0], ['ADA', 0], ['DOT', 0]] #This list will contain every crypto we use and its price
 potential_harvest_dates = []
 user_buys = []
 
@@ -20,12 +20,12 @@ possible_basket = [['BTC', 0.5], ['ETH', 0.5]] # I think the baskets are best re
 another_possible_basket = [['BTC', 0.4], ['ETH', 0.2], ['USDT', 0.2], ['YFI', 0.2]]
 
 basket = [['BTC', 1]]
-#basket_1 = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['XRP', 0.1]]
-#basket_2 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.2], ['DOT', 0.1]]
-#basket_3 = [['BTC', 0.5], ['ETH', 0.2], ['LTC', 0.15], ['DOT', 0.15]]
-#basket_4 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.15], ['XRP', 0.15]]
-#all_baskets = [basket_1, basket_2, basket_3, basket_4]
-all_baskets = [basket]
+basket_1 = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
+basket_2 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.2], ['DOT', 0.1]]
+basket_3 = [['BTC', 0.5], ['ETH', 0.2], ['LTC', 0.15], ['DOT', 0.15]]
+basket_4 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.15], ['ADA', 0.15]]
+all_baskets = [basket_1, basket_2, basket_3, basket_4]
+#all_baskets = [basket]
 
 user_btc_buys = [['BTC', '2022-03-16', '0.0002442', '41359.54'],
                  ['BTC', '2022-02-16', '0.0003442', '40359.54'],
@@ -60,16 +60,16 @@ user_ltc_buys = [['LTC', '2022-03-16', '0.0078125', '128'],
                  ['LTC', '2021-07-16', '0.0078125', '140'],
                  ['LTC', '2021-06-16', '0.0078125', '150']]
 
-user_xrp_buys = [['XRP', '2022-03-16', '1', '1'],
-                 ['XRP', '2022-02-16', '1', '0.95'],
-                 ['XRP', '2022-01-16', '1', '0.98'],
-                 ['XRP', '2021-12-16', '1', '0.92'],
-                 ['XRP', '2021-11-16', '1', '0.87'],
-                 ['XRP', '2021-10-16', '1', '0.98'],
-                 ['XRP', '2021-09-16', '1', '1.01'],
-                 ['XRP', '2021-08-16', '1', '1.07'],
-                 ['XRP', '2021-07-16', '1', '1.08'],
-                 ['XRP', '2021-06-16', '1', '1.12']]
+user_ADA_buys = [['ADA', '2022-03-16', '1', '1'],
+                 ['ADA', '2022-02-16', '1', '0.95'],
+                 ['ADA', '2022-01-16', '1', '0.98'],
+                 ['ADA', '2021-12-16', '1', '0.92'],
+                 ['ADA', '2021-11-16', '1', '0.87'],
+                 ['ADA', '2021-10-16', '1', '0.98'],
+                 ['ADA', '2021-09-16', '1', '1.01'],
+                 ['ADA', '2021-08-16', '1', '1.07'],
+                 ['ADA', '2021-07-16', '1', '1.08'],
+                 ['ADA', '2021-06-16', '1', '1.12']]
 
 user_dot_buys = [['DOT', '2022-03-16', '0.06818', '22'],
                  ['DOT', '2022-02-16', '0.06818', '21'],
@@ -125,7 +125,7 @@ def predict_loss(all_crypto_prices, user): # This is the function that we would 
 
 def harvest(user, all_crypto_prices):
     
-    all_baskets = get_baskets()
+    #all_baskets = get_baskets()
     basket = combine_baskets(all_baskets)
 
     for coin in basket:
@@ -133,15 +133,15 @@ def harvest(user, all_crypto_prices):
             if coin[0] == price[0]:
                 coin.append(price[1])
 
-    for coin in basket:
+    """for coin in basket:
         user_buys = get_user_buys(user)
         total_amount_of_coin = float(user.client.get_account(coin[0])['balance']['amount'])
         amount_to_sell, net_losses = get_amount(user_buys, coin[2], coin[0], total_amount_of_coin)
         coin.append(total_amount_of_coin)
         coin.append(amount_to_sell)
-        coin.append(net_losses)
+        coin.append(net_losses)"""
 
-    """(total_btc_to_sell, btc_net_losses) = get_amount(user_btc_buys, 45000, 'BTC', 0.002842)
+    (total_btc_to_sell, btc_net_losses) = get_amount(user_btc_buys, 45000, 'BTC', 0.002842)
     basket[0].append(0.002842)
     basket[0].append(total_btc_to_sell)
     basket[0].append(btc_net_losses)
@@ -149,20 +149,21 @@ def harvest(user, all_crypto_prices):
     basket[1].append(0.02842)
     basket[1].append(total_eth_to_sell)
     basket[1].append(eth_net_losses)
-    (total_ltc_to_sell, ltc_net_losses) = get_amount(user_ltc_buys, 125, 'LTC', 0.078125)
+    (total_ltc_to_sell, ltc_net_losses) = get_amount(user_ltc_buys, 150, 'LTC', 0.078125)
     basket[2].append(0.078125)
     basket[2].append(total_ltc_to_sell)
     basket[2].append(ltc_net_losses)
-    (total_xrp_to_sell, xrp_net_losses) = get_amount(user_xrp_buys, 1, 'XRP', 10)
+    (total_ADA_to_sell, ADA_net_losses) = get_amount(user_ADA_buys, 1.2, 'ADA', 10)
     basket[3].append(10)
-    basket[3].append(total_xrp_to_sell)
-    basket[3].append(xrp_net_losses)
+    basket[3].append(total_ADA_to_sell)
+    basket[3].append(ADA_net_losses)
     (total_dot_to_sell, dot_net_losses) = get_amount(user_dot_buys, 22, 'DOT', 0.6818)
     basket[4].append(0.6818)
     basket[4].append(total_dot_to_sell)
-    basket[4].append(dot_net_losses)"""
+    basket[4].append(dot_net_losses)
 
     trades = get_trades(basket)
+    return trades
 
     #will pull baskets from the database
 def get_baskets():
@@ -374,6 +375,7 @@ def get_one_price(crypto): #This function will get the price of one crypto curre
     request_url = ("https://api.coinbase.com/v2/prices/" + crypto + "-USD/spot") #URL for specific crypto
     response = requests.get(request_url)
     data = response.json()
+    print(data)
     price = data["data"]["amount"] #price of the crypto
     return float(price)
 
@@ -385,9 +387,10 @@ def get_spot_price(currency_pair, date, user): #currency_pair must be in format 
 def process_investments(user):
     investing = True
     all_crypto_prices = get_all_crypto_prices()
-    spot_price = get_spot_price('BTC-USD', '2022-3-2', user)
-    print (f"the spot price is {spot_price}")
-    print (all_crypto_prices)
-    harvest(user, all_crypto_prices)
-    time.sleep(30)
-    predict_loss(all_crypto_prices, user), ['XRP', 0], ['DOT', 0]
+    #spot_price = get_spot_price('BTC-USD', '2022-3-2', user)
+    #print (f"the spot price is {spot_price}")
+    #print (all_crypto_prices)
+    trades = harvest(user, all_crypto_prices)
+    #time.sleep(30)
+    #predict_loss(all_crypto_prices, user), ['ADA', 0], ['DOT', 0]
+    return trades
