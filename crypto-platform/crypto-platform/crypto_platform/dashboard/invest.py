@@ -96,8 +96,9 @@ def make_initial_investment(user, basket, amount):
         percent = crypto_percentage[1] # The percentage this cryptocurrency makes up in the basket.
         crypto_amount = amount * percent # The amount of this cryptocurrency to buy.
 
+        #user.test_buy(crypto, crypto_amount)
         user.buy_with_bank_payment_method(crypto, crypto_amount)
-        flash('Your investment has been processed! You should recieve several emails from Coinbase.')
+    flash('Your investment has been processed! You should recieve several emails from Coinbase.')
 
 
 

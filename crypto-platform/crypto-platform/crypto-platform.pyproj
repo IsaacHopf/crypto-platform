@@ -51,11 +51,13 @@
     <Content Include="crypto_platform\dashboard\static\content\bootstrap.css" />
     <Content Include="crypto_platform\dashboard\static\content\bootstrap.min.css" />
     <Content Include="crypto_platform\dashboard\static\content\site.css" />
+    <Content Include="crypto_platform\dashboard\static\content\form-popup.css" />
     <Content Include="crypto_platform\dashboard\static\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="crypto_platform\dashboard\static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="crypto_platform\dashboard\static\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="crypto_platform\dashboard\static\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="crypto_platform\dashboard\static\scripts\bootstrap.js" />
+    <Content Include="crypto_platform\dashboard\static\scripts\form-popup.js" />
     <Content Include="crypto_platform\dashboard\static\scripts\bootstrap.min.js" />
     <None Include="crypto_platform\dashboard\static\scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="crypto_platform\dashboard\static\scripts\jquery-1.10.2.js" />

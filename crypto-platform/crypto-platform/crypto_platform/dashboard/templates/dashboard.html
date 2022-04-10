@@ -8,25 +8,30 @@
 <h3>{{ message }}</h3>
 
 <!--Basket Selection Div-->
-<div style="margin-top: 5rem; margin-bottom: 5rem;">
-    START Basket Selection Form
+<div>
 
-    <form method="POST">
-        <h3>Basket Selection</h3>
-        <input type="radio" name="baskets" id="basket1" value="Basket 1" />
-        <label for="basket1">Basket 1</label><br />
-        <!--<input type="radio" name="baskets" id="basket2" value="Basket 2" />
-        <label for="basket2">Basket 2</label><br />
-        <input type="radio" name="baskets" id="basket3" value="Basket 3" />
-        <label for="basket3">Basket 3</label><br />-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='content/form-popup.css') }}" />
+    <script src="{{ url_for('.static', filename='scripts/form-popup.js') }}"></script>
 
-        <h3>Investment Amount</h3>
-        <input type="text" name="investment-amount" style="display: block; margin-bottom: 1rem;" />
+    <h1>Investments</h1>
+    <button class="btn-primary" onclick="openSelectBasketForm()">Select a Basket to Invest</button>
 
-        <button type="submit" class="btn-primary" style="margin-bottom: 1rem;">SUBMIT</button>
-    </form> 
-    
-    END Basket Selection Form
+    <div class="form-popup" id="selectBasketForm">
+        <form action="{{ url_for('dashboard.selectbasket') }}" method="POST" class="form-container">
+            <h3>Basket</h3>
+            {% for basket in baskets %}
+                <input type="radio" name="baskets" id="{{ basket }}" value="{{ basket }}" required />
+                <label for="{{ basket }}">{{ basket }}</label><br />
+            {% endfor %}
+
+            <h3>Investment Amount</h3>
+            <input type="text" name="investment-amount" style="display: block; margin-bottom: 3rem;" required />
+
+            <button type="submit" class="btn">Invest</button>
+            <button type="button" class="btn cancel" onclick="closeSelectBasketForm()">Close</button>
+        </form>
+    </div>
+
 </div>
 
 <!--Tax Loss Harvesting Div-->
@@ -55,8 +60,10 @@
     <p><a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_one_visibility }}">check for harvest potential&raquo;</a></p>
 
     <h2 class="{{ step_two_visibility }}">Confirm?</h2>
-    <p><a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">Yes.&raquo;</a>
-       <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">No.&raquo;</a></p>
+    <p>
+        <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">Yes.&raquo;</a>
+        <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">No.&raquo;</a>
+    </p>
 
 </div>
 
