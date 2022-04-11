@@ -7,73 +7,82 @@
 <h2>{{ title }}.</h2>
 <h3>{{ message }}</h3>
 
-<!--Basket Selection Div-->
-<div>
-
-    <link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='content/form-popup.css') }}" />
-    <script src="{{ url_for('.static', filename='scripts/form-popup.js') }}"></script>
-
-    <h1>Investments</h1>
-    <button class="btn-primary" onclick="openSelectBasketForm()">Select a Basket to Invest</button>
-
-    <div class="form-popup" id="selectBasketForm">
-        <form action="{{ url_for('dashboard.selectbasket') }}" method="POST" class="form-container">
-            <h3>Basket</h3>
-            {% for basket in baskets %}
-                <input type="radio" name="baskets" id="{{ basket }}" value="{{ basket }}" required />
-                <label for="{{ basket }}">{{ basket }}</label><br />
-            {% endfor %}
-
-            <h3>Investment Amount</h3>
-            <input type="text" name="investment-amount" style="display: block; margin-bottom: 3rem;" required />
-
-            <button type="submit" class="btn">Invest</button>
-            <button type="button" class="btn cancel" onclick="closeSelectBasketForm()">Close</button>
-        </form>
-    </div>
-
-</div>
-
-<!--Tax Loss Harvesting Div-->
-<div>
-
-    <h1>Tax Loss Harvesting</h1>
-    <table class="table {{step_two_visibility}}">
-        <thead>
-            <tr>
-                <th scope="col">SELL</th>
-                <th scope="col">Amount</th>
-                <th scope="col">BUY</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            {% for row in data %}
-            <tr>
-                {% for cell in row %}
-                <td> {{ cell }} </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <p><a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_one_visibility }}">check for harvest potential&raquo;</a></p>
-
-    <h2 class="{{ step_two_visibility }}">Confirm?</h2>
-    <p>
-        <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">Yes.&raquo;</a>
-        <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">No.&raquo;</a>
-    </p>
-
-</div>
-
-<p><a href=" {{ url_for('dashboard.testscripts') }} " class="btn btn-primary btn-large">TEST STUFFS &raquo;</a></p>
-
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-<h4 class="error-popup">{{ message }}</h4>
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+    <!--If there are any errors, display the error(s)-->
+    {% if errors %}
+        {% for error in errors %}
+            {% if error=="Please add your bank account as a payment method on Coinbase before proceeding." %}
+                <div class="error-popup">
+                    <h4 style="display:inline; margin-left:1.5rem;">{{ error }}</h4>
+                    <button href="https://www.coinbase.com/settings/linked-accounts" class="btn">Add Bank Account on Coinbase</button>
+                </div>
+            {% else %}
+                <h4 class="error-popup">{{ error }}</h4>
+            {% endif %}
         {% endfor %}
+    <!--If there are no errors, display the Dashboard-->
+    {% else %}
+        <!--Basket Selection Div-->
+        <div>
+
+            <link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='content/form-popup.css') }}" />
+            <script src="{{ url_for('.static', filename='scripts/form-popup.js') }}"></script>
+
+            <h1>Investments</h1>
+            <button class="btn-primary" onclick="openSelectBasketForm()">Select a Basket to Invest</button>
+
+            <div class="form-popup" id="selectBasketForm">
+                <form action="{{ url_for('dashboard.selectbasket') }}" method="POST" class="form-container">
+                    <h3>Basket</h3>
+                    {% for basket in baskets %}
+                    <input type="radio" name="baskets" id="{{ basket }}" value="{{ basket }}" required />
+                    <label for="{{ basket }}">{{ basket }}</label><br />
+                    {% endfor %}
+
+                    <h3>Investment Amount</h3>
+                    <input type="text" name="investment-amount" style="display: block; margin-bottom: 3rem;" required />
+
+                    <button type="submit" class="btn">Invest</button>
+                    <button type="button" class="btn cancel" onclick="closeSelectBasketForm()">Close</button>
+                </form>
+            </div>
+
+        </div>
+
+        <!--Tax Loss Harvesting Div-->
+        <div>
+
+            <h1>Tax Loss Harvesting</h1>
+            <table class="table {{step_two_visibility}}">
+                <thead>
+                    <tr>
+                        <th scope="col">SELL</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">BUY</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for row in data %}
+                    <tr>
+                        {% for cell in row %}
+                        <td> {{ cell }} </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p><a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_one_visibility }}">check for harvest potential&raquo;</a></p>
+
+            <h2 class="{{ step_two_visibility }}">Confirm?</h2>
+            <p>
+                <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">Yes.&raquo;</a>
+                <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">No.&raquo;</a>
+            </p>
+
+        </div>
+
+        <p><a href=" {{ url_for('dashboard.testscripts') }} " class="btn btn-primary btn-large">TEST STUFFS &raquo;</a></p>
     {% endif %}
 {% endwith %}
 

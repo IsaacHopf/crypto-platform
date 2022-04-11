@@ -41,7 +41,7 @@ def selectbasket():
     
     selected_basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
 
-    invest.make_initial_investment(user, selected_basket, investment_amount)
+    invest.make_investment(user, selected_basket, investment_amount)
 
     return render_template(
         'dashboard.html',
