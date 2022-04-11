@@ -13,7 +13,7 @@
         {% for error in errors %}
             {% if error=="Please add your bank account as a payment method on Coinbase before proceeding." %}
                 <div class="error-popup">
-                    <h4 style="display:inline; margin-left:1.5rem;">{{ error }}</h4>
+                    <h4 style="display:inline; margin-right:1.5rem;">{{ error }}</h4>
                     <button href="https://www.coinbase.com/settings/linked-accounts" class="btn">Add Bank Account on Coinbase</button>
                 </div>
             {% else %}
