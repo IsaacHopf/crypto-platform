@@ -21,8 +21,8 @@ basket_1 = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
 basket_2 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.2], ['DOT', 0.1]]
 basket_3 = [['BTC', 0.5], ['ETH', 0.2], ['LTC', 0.15], ['DOT', 0.15]]
 basket_4 = [['BTC', 0.3], ['ETH', 0.4], ['LTC', 0.15], ['ADA', 0.15]]
-all_baskets = [basket_1, basket_2, basket_3, basket_4]
-#all_baskets = [basket]
+test_baskets = [basket_1, basket_2, basket_3, basket_4]
+all_baskets = [basket]
 
 user_btc_buys = [['BTC', '2022-03-16', '0.0002442', '41359.54'],
                  ['BTC', '2022-02-16', '0.0003442', '40359.54'],
@@ -110,15 +110,15 @@ def harvest(user, all_crypto_prices):
             if coin[0] == price[0]:
                 coin.append(price[1])
 
-    """for coin in basket:
+    for coin in basket:
         user_buys = get_user_buys(user)
         total_amount_of_coin = float(user.client.get_account(coin[0])['balance']['amount'])
         amount_to_sell, net_losses = get_amount(user_buys, coin[2], coin[0], total_amount_of_coin)
         coin.append(total_amount_of_coin)
         coin.append(amount_to_sell)
-        coin.append(net_losses)"""
+        coin.append(net_losses)
 
-    (total_btc_to_sell, btc_net_losses) = get_amount(user_btc_buys, 45000, 'BTC', 0.002842)
+    """(total_btc_to_sell, btc_net_losses) = get_amount(user_btc_buys, 45000, 'BTC', 0.002842)
     basket[0].append(0.002842)
     basket[0].append(total_btc_to_sell)
     basket[0].append(btc_net_losses)
@@ -137,7 +137,7 @@ def harvest(user, all_crypto_prices):
     (total_dot_to_sell, dot_net_losses) = get_amount(user_dot_buys, 22, 'DOT', 0.6818)
     basket[4].append(0.6818)
     basket[4].append(total_dot_to_sell)
-    basket[4].append(dot_net_losses)
+    basket[4].append(dot_net_losses)"""
 
     trades = get_trades(basket)
     return trades
@@ -370,4 +370,41 @@ def process_investments(user):
     trades = harvest(user, all_crypto_prices)
     #time.sleep(30)
     #predict_loss(all_crypto_prices, user), ['ADA', 0], ['DOT', 0]
+    return trades
+
+def use_test_data(user):
+    investing = True
+    all_crypto_prices = get_all_crypto_prices()
+
+    #all_baskets = get_baskets()
+    basket = combine_baskets(test_baskets)
+
+    for coin in basket:
+        for price in all_crypto_prices:
+            if coin[0] == price[0]:
+                coin.append(price[1])
+
+    (total_btc_to_sell, btc_net_losses) = get_amount(user_btc_buys, 45000, 'BTC', 0.002842)
+    basket[0].append(0.002842)
+    basket[0].append(total_btc_to_sell)
+    basket[0].append(btc_net_losses)
+    (total_eth_to_sell, eth_net_losses) = get_amount(user_eth_buys, 3000, 'ETH', 0.02842)
+    basket[1].append(0.02842)
+    basket[1].append(total_eth_to_sell)
+    basket[1].append(eth_net_losses)
+    (total_ltc_to_sell, ltc_net_losses) = get_amount(user_ltc_buys, 150, 'LTC', 0.078125)
+    basket[2].append(0.078125)
+    basket[2].append(total_ltc_to_sell)
+    basket[2].append(ltc_net_losses)
+    (total_ADA_to_sell, ADA_net_losses) = get_amount(user_ADA_buys, 1.2, 'ADA', 10)
+    basket[3].append(10)
+    basket[3].append(total_ADA_to_sell)
+    basket[3].append(ADA_net_losses)
+    (total_dot_to_sell, dot_net_losses) = get_amount(user_dot_buys, 22, 'DOT', 0.6818)
+    basket[4].append(0.6818)
+    basket[4].append(total_dot_to_sell)
+    basket[4].append(dot_net_losses)
+
+    trades = get_trades(basket)
+
     return trades

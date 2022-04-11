@@ -83,6 +83,22 @@ def checkharvest():
         step_two_visibility = ''
     )
 
+@dashboard.route('/testharvest')
+def testharvest():
+    create_user()
+
+    data = taxlossharvest.use_test_data(user)
+
+    return render_template(
+        'dashboard.html',
+        title='Dashboard',
+        #year=datetime.now().year,
+        baskets=get_basket_names(),
+        data=data,
+        step_one_visibility = 'hidden',
+        step_two_visibility = ''
+    )
+
 def create_user():
     """Handles the callback to Coinbase and creates the User."""
     if 'tokens' in session: # If the tokens session variable already exists ...
