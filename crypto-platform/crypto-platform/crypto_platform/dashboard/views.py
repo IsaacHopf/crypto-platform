@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, session, request
 from datetime import datetime
 
 from crypto_platform import connect
-from crypto_platform.dashboard import invest
+from crypto_platform.dashboard import invest, taxlossharvest
 from crypto_platform.dashboard.User import User
 
 dashboard = Blueprint('dashboard', __name__, url_prefix='/dashboard', 
@@ -56,7 +56,7 @@ def selectbasket():
 
 @dashboard.route('/testscripts')
 def testscripts():
-    invest.process_investments(user)
+    taxlossharvest.process_investments(user)
 
     return render_template(
         'dashboard.html',
@@ -71,7 +71,7 @@ def testscripts():
 def checkharvest():
     create_user()
 
-    data = invest.process_investments(user)
+    data = taxlossharvest.process_investments(user)
 
     return render_template(
         'dashboard.html',
