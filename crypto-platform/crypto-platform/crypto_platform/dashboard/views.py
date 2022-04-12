@@ -4,6 +4,7 @@ Routes and views for the dashboard pages.
 
 from flask import Blueprint, render_template, session, request
 from datetime import datetime
+import re
 
 from crypto_platform import connect
 from crypto_platform.dashboard import invest, taxlossharvest
@@ -20,9 +21,7 @@ def home():
 
     return render_template(
         'dashboard.html',
-        title='Dashboard',
-        #year=datetime.now().year,
-        message='Your application description page.',
+        native_currency = user.native_currency,
         baskets=get_basket_names(),
         step_one_visibility = '',
         step_two_visibility = 'hidden'
@@ -36,18 +35,20 @@ def selectbasket():
     selected_basket_name = request.form['baskets']
     investment_amount = float(request.form['investment-amount'])
 
+    if not selected_basket_name or not investment_amount:
+        invest.make_investment(user, selected_basket, investment_amount)
+
     #selected_basket = BasketModel.query.filter_by(name='selected_basket')
     #get crypto percentages
     
     selected_basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
 
-    invest.make_investment(user, selected_basket, investment_amount)
+    if selected_basket_name or investment_amount:
+        invest.make_investment(user, selected_basket, investment_amount)
 
     return render_template(
         'dashboard.html',
-        title='Dashboard',
-        #year=datetime.now().year,
-        message='Your application description page.',
+        native_currency = user.native_currency,
         baskets=get_basket_names(),
         step_one_visibility = '',
         step_two_visibility = 'hidden'
@@ -60,8 +61,7 @@ def testscripts():
 
     return render_template(
         'dashboard.html',
-        title='Dashboard',
-        year=datetime.now().year,
+        native_currency = user.native_currency,
         baskets=get_basket_names(),
         step_one_visibility = '',
         step_two_visibility = 'hidden'
@@ -75,8 +75,7 @@ def checkharvest():
 
     return render_template(
         'dashboard.html',
-        title='Dashboard',
-        #year=datetime.now().year,
+        native_currency = user.native_currency,
         baskets=get_basket_names(),
         data=data,
         step_one_visibility = 'hidden',
@@ -91,8 +90,7 @@ def testharvest():
 
     return render_template(
         'dashboard.html',
-        title='Dashboard',
-        #year=datetime.now().year,
+        native_currency = user.native_currency,
         baskets=get_basket_names(),
         data=data,
         step_one_visibility = 'hidden',

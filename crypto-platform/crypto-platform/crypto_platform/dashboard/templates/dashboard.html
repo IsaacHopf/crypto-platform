@@ -4,12 +4,12 @@
 
 <link rel="stylesheet" href="{{ url_for('.static', filename='content/StyleSheet1.css') }}" />
 
-<h2>{{ title }}.</h2>
-<h3>{{ message }}</h3>
+<h2>Dashboard.</h2>
+<h3>Your application description page.</h3>
 
 {% with errors = get_flashed_messages(category_filter=["error"]) %}
     <!--If there are any errors, display the error(s)-->
-    {% if errors %}
+    {% if not errors %}
         {% for error in errors %}
             {% if error=="Please add your bank account as a payment method on Coinbase before proceeding." %}
                 <div class="error-popup">
@@ -39,8 +39,8 @@
                     <label for="{{ basket }}">{{ basket }}</label><br />
                     {% endfor %}
 
-                    <h3>Investment Amount</h3>
-                    <input type="text" name="investment-amount" style="display: block; margin-bottom: 3rem;" required />
+                    <h3>Investment Amount (in {{ native_currency }})</h3>
+                    <input type="number" min="1" step="any" name="investment-amount" style="display: block; margin-bottom: 3rem;" required />
 
                     <button type="submit" class="btn">Invest</button>
                     <button type="button" class="btn cancel" onclick="closeSelectBasketForm()">Close</button>
