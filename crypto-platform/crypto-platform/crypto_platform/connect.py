@@ -36,4 +36,4 @@ def coinbase_callback():
             return {'access_token': access_token, 'refresh_token': refresh_token}
         else:
             # If login response is untrustworthy
-            coinbase_login()
+            return coinbase_login()
