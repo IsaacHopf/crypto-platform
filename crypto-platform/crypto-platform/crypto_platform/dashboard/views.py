@@ -35,9 +35,6 @@ def selectbasket():
     selected_basket_name = request.form['baskets']
     investment_amount = float(request.form['investment-amount'])
 
-    if not selected_basket_name or not investment_amount:
-        invest.make_investment(user, selected_basket, investment_amount)
-
     #selected_basket = BasketModel.query.filter_by(name='selected_basket')
     #get crypto percentages
     
@@ -45,6 +42,22 @@ def selectbasket():
 
     if selected_basket_name or investment_amount:
         invest.make_investment(user, selected_basket, investment_amount)
+
+    return render_template(
+        'dashboard.html',
+        native_currency = user.native_currency,
+        baskets=get_basket_names(),
+        step_one_visibility = '',
+        step_two_visibility = 'hidden'
+    )
+
+@dashboard.route('/withdraw')
+def withdraw():
+    """Handles withdrawing."""
+    create_user()
+
+    basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
+    invest.make_withdrawal(user, basket, user.get_cash_wallet_balance())
 
     return render_template(
         'dashboard.html',

@@ -22,21 +22,22 @@
         {% endfor %}
     <!--If there are no errors, display the Dashboard-->
     {% else %}
-        <!--Basket Selection Div-->
+        <!--Investing/Basket Selection Div-->
         <div>
 
             <link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='content/form-popup.css') }}" />
             <script src="{{ url_for('.static', filename='scripts/form-popup.js') }}"></script>
 
             <h1>Investments</h1>
-            <button class="btn-primary" onclick="openSelectBasketForm()">Select a Basket to Invest</button>
+            <button class="btn-primary" onclick="openSelectBasketForm()">Invest</button>
 
             <div class="form-popup" id="selectBasketForm">
                 <form action="{{ url_for('dashboard.selectbasket') }}" method="POST" class="form-container">
+                    <h2>Invest</h2>
                     <h3>Basket</h3>
                     {% for basket in baskets %}
-                    <input type="radio" name="baskets" id="{{ basket }}" value="{{ basket }}" required />
-                    <label for="{{ basket }}">{{ basket }}</label><br />
+                        <input type="radio" name="baskets" id="{{ basket }}" value="{{ basket }}" required />
+                        <label for="{{ basket }}">{{ basket }}</label><br />
                     {% endfor %}
 
                     <h3>Investment Amount (in {{ native_currency }})</h3>
@@ -47,6 +48,11 @@
                 </form>
             </div>
 
+        </div>
+
+        <!--Withdraw Div-->
+        <div>
+            <p><a href="{{ url_for('dashboard.withdraw') }}" class="btn btn-primary">Withdraw</a></p>
         </div>
 
         <!--Tax Loss Harvesting Div-->
