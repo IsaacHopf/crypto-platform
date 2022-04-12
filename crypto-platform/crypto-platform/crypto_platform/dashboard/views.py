@@ -40,24 +40,32 @@ def selectbasket():
         return user # redirect them to login.
     else:
 
-        selected_basket_name = request.form['baskets']
-        investment_amount = float(request.form['investment-amount'])
-
-        #selected_basket = BasketModel.query.filter_by(name='selected_basket')
-        #get crypto percentages
-    
-        selected_basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
-
-        if selected_basket_name or investment_amount or re.match("^\d*", str(investment_amount)):
-            invest.make_investment(user, selected_basket, investment_amount)
-
-        return render_template(
+        try:
+            selected_basket_name = request.form['baskets']
+            investment_amount = float(request.form['investment-amount'])
+        except:
+            return render_template(
             'dashboard.html',
             native_currency = user.native_currency,
             baskets=get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
+        else:
+            #selected_basket = BasketModel.query.filter_by(name='selected_basket')
+            #get crypto percentages
+            selected_basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
+
+            if re.match("^\d*", str(investment_amount)): # If the basket name and investment amount exist and if the investment amount is a number ...
+                invest.make_investment(user, selected_basket, investment_amount) # make the investment.
+
+            return render_template(
+                'dashboard.html',
+                native_currency = user.native_currency,
+                baskets=get_basket_names(),
+                step_one_visibility = '',
+                step_two_visibility = 'hidden'
+            )
 
 @dashboard.route('/withdraw')
 def withdraw():
