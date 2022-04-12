@@ -9,7 +9,7 @@
 
 {% with errors = get_flashed_messages(category_filter=["error"]) %}
     <!--If there are any errors, display the error(s)-->
-    {% if not errors %}
+    {% if errors %}
         {% for error in errors %}
             {% if error=="Please add your bank account as a payment method on Coinbase before proceeding." %}
                 <div class="error-popup">

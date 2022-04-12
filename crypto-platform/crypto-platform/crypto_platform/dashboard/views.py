@@ -40,7 +40,7 @@ def selectbasket():
     
     selected_basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
 
-    if selected_basket_name or investment_amount:
+    if selected_basket_name or investment_amount or re.match("^\d*", str(investment_amount)):
         invest.make_investment(user, selected_basket, investment_amount)
 
     return render_template(
