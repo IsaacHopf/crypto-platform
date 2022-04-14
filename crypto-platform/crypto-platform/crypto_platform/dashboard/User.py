@@ -1,16 +1,12 @@
 # For Coinbase
 from coinbase.wallet.client import OAuthClient
 import re
-import json
 
 # For Exception Handling
 from coinbase.wallet.error import RateLimitExceededError, UnverifiedEmailError
 from flask import flash, session
-from  datetime import datetime, timedelta
-import threading
 import time
 from crypto_platform import connect
-from crypto_platform.dashboard import notify 
 
 # For the Database
 from crypto_platform.models import UserModel
@@ -73,23 +69,22 @@ class User(object):
         # If the user has not added their bank payment method
         raise Exception('User has not added bank payment method!')
 
-    def buy_with_cash_payment_method(self, crypto, total):
+    def deposit(self, amount):
         """
-        Buys cryptocurrency for the user and pays with the user's cash wallet. This is used when tax loss harvesting.
+        Deposits funds into the user's Cash wallet and pays with the user's bank payment method.
 
-        crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
-        total: the total that will be spent (in the user's native currency)
+        amount: the amount to deposit (in the user's native currency)
         """
         retries = 0
 
         def transaction():
             try:
-                account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
+                account_id = self.client.get_account(self.native_currency)['id'] # Finds the user's Cash wallet.
 
-                self.client.buy(account_id, # Buys the specified cryptocurrency.
-                        total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                        currency = self.native_currency, # in the user's native currency.
-                        payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
+                self.client.deposit(account_id, # Withdraws from the user's Cash wallet.
+                                    amount = amount, # Withdraws the specified amount ...
+                                    currency = self.native_currency, # in the user's native currency.
+                                    payment_method = self.bank_payment_method_id) # Deposits the funds into the user's bank payment method.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
                 raise RateLimitExceededError
@@ -105,9 +100,9 @@ class User(object):
 
         transaction()
 
-    def buy_with_bank_payment_method(self, crypto, total):
+    def buy(self, crypto, total):
         """
-        Buys cryptocurrency for the user and pays with the user's bank payment method. This is used for initial investments.
+        Buys cryptocurrency for the user and pays with the user's cash wallet.
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         total: the total that will be spent (in the user's native currency)
@@ -121,7 +116,7 @@ class User(object):
                 self.client.buy(account_id, # Buys the specified cryptocurrency.
                                 total = total, # Buys the specified total (a portion of this total is used for fees) ...
                                 currency = self.native_currency, # in the user's native currency.
-                                payment_method = self.bank_payment_method_id) # Pays with the user's bank payment method.
+                                payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
                 raise RateLimitExceededError
@@ -135,7 +130,7 @@ class User(object):
                 else: # If tried 3 times ...
                     raise Exception(e)
 
-        transaction()    
+        transaction() 
 
     def test_buy(self, crypto, total):
         """
@@ -185,9 +180,9 @@ class User(object):
                 account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
 
                 self.client.sell(account_id, # Sells the specified cryptocurreny.
-                                    amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
-                                    currency = self.native_currency, # in the user's native currency.
-                                    payment_method = self.cash_payment_method_id) # Deposits the money into the user's Cash wallet.
+                                 amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
+                                 currency = self.native_currency, # in the user's native currency.
+                                 payment_method = self.cash_payment_method_id) # Deposits the funds into the user's Cash wallet.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
                 raise RateLimitExceededError
@@ -205,7 +200,7 @@ class User(object):
 
     def withdraw(self, amount):
         """
-        Withdraws money from the user's Cash wallet and deposits the earnings into the user's bank payment method.
+        Withdraws funds from the user's Cash wallet and deposits the earnings into the user's bank payment method.
 
         amount: the amount to withdraw (in the user's native currency)
         """
@@ -216,12 +211,12 @@ class User(object):
                 account_id = self.client.get_account(self.native_currency)['id'] # Finds the user's Cash wallet.
 
                 self.client.withdraw(account_id, # Withdraws from the user's Cash wallet.
-                                amount = amount, # Withdraws the specified amount ...
-                                currency = self.native_currency, # in the user's native currency.
-                                payment_method = self.bank_payment_method_id) # Deposits the money into the user's bank payment method.
+                                     amount = amount, # Withdraws the specified amount ...
+                                     currency = self.native_currency, # in the user's native currency.
+                                     payment_method = self.bank_payment_method_id) # Deposits the funds into the user's bank payment method.
 
-            except RateLimitExceededError as e: # If the rate limit was exceeded ...
-                flash('Oops, your withdraw was not processed, please try again in an hour. Error Code: ' + str(e), 'error') # flash rate limit error message.
+            except RateLimitExceededError: # If the rate limit was exceeded ...
+                raise RateLimitExceededError
 
             except Exception as e: # If there was another exception ...
                 nonlocal retries
@@ -230,7 +225,7 @@ class User(object):
                     timer = time.sleep(1) # try again in a second.
                     transaction()
                 else: # If tried 3 times ...
-                    flash('Oops, your withdraw was not processed, please try again in an hour. Error Code: ' + str(e), 'error') # flash other error message.
+                    raise Exception(e)
 
         transaction()
 
@@ -245,9 +240,8 @@ class User(object):
 
     def __add_user_to_database(self):
         """Adds the current user to the database."""
-        new_user = UserModel(
-            id = self.coinbase_id,
-            email = self.email)
+        new_user = UserModel(id = self.coinbase_id,
+                             email = self.email)
 
         db.session.add(new_user)
         db.session.commit()

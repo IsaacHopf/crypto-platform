@@ -50,8 +50,8 @@
                         <label for="{{ basket }}">{{ basket }}</label><br />
                     {% endfor %}
 
-                    <h3>Investment Amount (in {{ native_currency }})</h3>
-                    <input type="number" min="1" step="any" name="investment-amount" style="display: block; margin-bottom: 3rem;" required />
+                    <h3>Invest Amount (in {{ native_currency }})</h3>
+                    <input type="number" min="1" step="any" name="invest-amount" style="display: block; margin-bottom: 3rem;" required />
 
                     <button type="submit" class="btn">Invest</button>
                     <button type="button" class="btn cancel" onclick="closeSelectBasketForm()">Close</button>

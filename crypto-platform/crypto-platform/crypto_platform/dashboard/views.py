@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import re
 
 from crypto_platform import connect
-from crypto_platform.dashboard import invest, taxlossharvest
+from crypto_platform.dashboard import transact, taxlossharvest
 from crypto_platform.dashboard.User import User
 
 # For the Database
@@ -45,7 +45,7 @@ def selectbasket():
 
     try:
         selected_basket_name = request.form['baskets']
-        investment_amount = float(request.form['investment-amount'])
+        invest_amount = float(request.form['investment-amount'])
     except:
         return render_template(
         'dashboard.html',
@@ -59,8 +59,8 @@ def selectbasket():
         #get crypto percentages
         selected_basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
 
-        if re.match("^\d*", str(investment_amount)): # If the basket name and investment amount exist and if the investment amount is a number ...
-            invest.make_investment(user, selected_basket, investment_amount) # make the investment.
+        if re.match("^\d*", str(invest_amount)): # If the basket name and investment amount exist and if the investment amount is a number ...
+            transact.buy_basket(user, selected_basket, invest_amount) # make the investment.
 
         check_failed_transactions(user)
 
@@ -81,7 +81,7 @@ def withdraw():
         return connect.coinbase_login()
 
     basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
-    invest.make_withdrawal(user, basket, user.get_cash_wallet_balance())
+    transact.sell_basket(user, basket, user.get_cash_wallet_balance())
 
     return render_template(
         'dashboard.html',
@@ -152,7 +152,7 @@ def retrybuys():
     except:
         return connect.coinbase_login()
 
-    invest.retry_make_investment(user)
+    transact.retry_buy_basket(user)
     check_failed_transactions(user)
 
     return render_template(
@@ -170,7 +170,7 @@ def retrysells():
     except:
         return connect.coinbase_login()
 
-    user.retry_make_withdrawal(user)
+    transact.retry_sell_basket(user)
     check_failed_transactions(user)
 
     return render_template(
@@ -185,7 +185,7 @@ def create_user():
     """
     Creates the user and stores their tokens, user information, and payment methods in a session variable. If the user just logged in, callbacks to Coinbase to create the user. If the user has already logged in, creates the user from the session variables.
     
-    return: the user, as User
+    return: the user, represented as an object of the User class
     """
     if 'tokens' in session: # If the tokens session variable exists ...
         if datetime.now() - session['tokens_created_at'] > timedelta(hours=1): # If the user's tokens are about to expire ...
@@ -235,6 +235,11 @@ def get_basket_names():
     return ['Default Basket']
 
 def check_failed_transactions(user):
+    """
+    Checks if the user has any failed transactions.
+
+    user: the user, represented as an object of the User class
+    """
     first_failed_buy = FailedBuyModel.query.filter_by(user_id = user.coinbase_id).first()
     first_failed_sell = FailedSellModel.query.filter_by(user_id = user.coinbase_id).first()
 
