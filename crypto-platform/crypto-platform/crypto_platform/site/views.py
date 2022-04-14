@@ -11,6 +11,12 @@ site = Blueprint('site', __name__,
                  template_folder='templates',
                  static_folder='static')
 
+@site.route('/test')
+def test():
+    return render_template(
+        'test.html',
+    )
+
 @site.route('/')
 @site.route('/home')
 def home():
