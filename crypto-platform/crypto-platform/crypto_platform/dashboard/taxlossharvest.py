@@ -98,7 +98,24 @@ def predict_loss(all_crypto_prices, user): # This is the function that we would 
     print ("These are the days with potential to harvest:")
     print (potential_harvest_dates)
 
+def perform_harvest_sells(user, trades, all_crypto_prices):
 
+    for trade in trades:
+        crypto_to_sell = trade[0]
+        amount_of_crypto_to_sell = trade[1]
+        price = get_one_price(crypto_to_sell, all_crypto_prices)
+        USD_amount_of_crypto_to_sell = price * amount_of_crypto_to_sell
+        user.sell(crypto_to_sell, USD_amount_of_crypto_to_sell)
+        trade.append(USD_amount_of_crypto_to_sell)
+
+    return trades
+
+def perform_harvest_buys(user, trades):
+    
+    for trade in trades:
+        crypto_to_buy = trade[2]
+        USD_amount_of_crypto_to_buy = trade[3]
+        user.buy(crypto_to_buy, USD_amount_of_crypto_to_buy)
 
 def harvest(user, all_crypto_prices):
     
@@ -333,28 +350,32 @@ def get_trades(basket): #basket = ['id', 'percentage', 'price of currency', 'amo
 
     return basket_of_sellers #['id to sell', 'amount to sell', 'what to buy']
 
-def tax_loss_harvest(user): # This is the function that would run everytime the user activates it. Either by clicking a button, logging in, or withdrawing their investment.
-    """Performs the tax-loss harvesting process."""
 
-    # After selling but before buying more, make sure to check that the user's cash wallet received the earnings from selling by calling user.get_cash_wallet_balance()
-    # Also, be sure to use user.buy_with_cash_payment_method() when buying
-
-    pass
-
-def get_all_crypto_prices(): # This is the function that will get the prices of every crypto currency we use
+def request_all_crypto_prices(): # This is the function that will get the prices of every crypto currency we use
 
     for crypto in all_crypto_prices: #Gets the price of every crypto by calling get_one_price for every crypto and saving the price.
-        price = get_one_price(crypto[0])
+        price = request_one_price(crypto[0])
         crypto[1] = price
     return all_crypto_prices
 
-def get_one_price(crypto): #This function will get the price of one crypto currency and return that price.
+
+def request_one_price(crypto): #This function will get the price of one crypto currency and return that price.
     request_url = ("https://api.coinbase.com/v2/prices/" + crypto + "-USD/spot") #URL for specific crypto
     response = requests.get(request_url)
     data = response.json()
     print(data)
     price = data["data"]["amount"] #price of the crypto
     return float(price)
+
+def get_one_price(id, all_crypto_prices):
+    
+    price = 0;
+    for crypto in all_crypto_prices:
+        if crypto[0] == id:
+            price = crypto[1]
+            return price
+
+    return None
 
 def get_spot_price(currency_pair, date, user): #currency_pair must be in format like 'BTC-USD' and date must be in format like '2022-3-2'
     spot_price = user.client.get_spot_price(currency_pair=currency_pair, date=date)
@@ -363,18 +384,18 @@ def get_spot_price(currency_pair, date, user): #currency_pair must be in format 
 
 def process_investments(user):
     investing = True
-    all_crypto_prices = get_all_crypto_prices()
+    all_crypto_prices = request_all_crypto_prices()
     #spot_price = get_spot_price('BTC-USD', '2022-3-2', user)
     #print (f"the spot price is {spot_price}")
     #print (all_crypto_prices)
     trades = harvest(user, all_crypto_prices)
     #time.sleep(30)
     #predict_loss(all_crypto_prices, user), ['ADA', 0], ['DOT', 0]
-    return trades
+    return trades, all_crypto_prices
 
 def use_test_data(user):
     investing = True
-    all_crypto_prices = get_all_crypto_prices()
+    all_crypto_prices = request_all_crypto_prices()
 
     #all_baskets = get_baskets()
     basket = combine_baskets(test_baskets)
