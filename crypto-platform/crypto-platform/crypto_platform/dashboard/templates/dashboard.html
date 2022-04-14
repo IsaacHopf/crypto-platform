@@ -16,6 +16,16 @@
                     <h4 style="display:inline; margin-right:1.5rem;">{{ error }}</h4>
                     <a href="https://www.coinbase.com/settings/linked-accounts" target="_blank" class="btn">Add Bank Account on Coinbase</a>
                 </div>
+            {% elif error=="Oh no! Some of your buys did not process." %}
+                <div class="error-popup">
+                    <h4 style="display:inline; margin-right:1.5rem;">{{ error }}</h4>
+                    <a href="{{ url_for('dashboard.retrybuys') }}" class="btn">Retry Buys?</a>
+                </div>
+            {% elif error=="Oh no! Some of your sells did not process." %}
+                <div class="error-popup">
+                    <h4 style="display:inline; margin-right:1.5rem;">{{ error }}</h4>
+                    <a href="{{ url_for('dashboard.retrysells') }}" class="btn">Retry Sells?</a>
+                </div>
             {% else %}
                 <h4 class="error-popup">{{ error }}</h4>
             {% endif %}

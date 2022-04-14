@@ -2,7 +2,7 @@
 Routes and views for the dashboard pages.
 """
 
-from flask import Blueprint, render_template, session, request
+from flask import Blueprint, render_template, session, request, flash
 from datetime import datetime, timedelta
 import re
 from werkzeug import Response
@@ -10,6 +10,9 @@ from werkzeug import Response
 from crypto_platform import connect
 from crypto_platform.dashboard import invest, taxlossharvest
 from crypto_platform.dashboard.User import User
+
+# For the Database
+from crypto_platform.models import FailedBuyModel, FailedSellModel
 
 dashboard = Blueprint('dashboard', __name__, url_prefix='/dashboard', 
                       template_folder='templates',
@@ -23,6 +26,8 @@ def home():
     if isinstance(user, Response): # If the user needs to login ...
         return user # redirect them to login.
     else:
+        check_failed_transactions(user)
+
         return render_template(
             'dashboard.html',
             native_currency = user.native_currency,
@@ -58,6 +63,8 @@ def selectbasket():
 
             if re.match("^\d*", str(investment_amount)): # If the basket name and investment amount exist and if the investment amount is a number ...
                 invest.make_investment(user, selected_basket, investment_amount) # make the investment.
+
+            check_failed_transactions(user)
 
             return render_template(
                 'dashboard.html',
@@ -144,6 +151,44 @@ def testharvest():
             step_two_visibility = ''
         )
 
+@dashboard.route('/retrybuys')
+def retrybuys():
+    user = create_user()
+
+    if isinstance(user, Response): # If the user needs to login ...
+        return user # redirect them to login.
+    else:
+
+        invest.retry_make_investment(user)
+        check_failed_transactions(user)
+
+        return render_template(
+                'dashboard.html',
+                native_currency = user.native_currency,
+                baskets=get_basket_names(),
+                step_one_visibility = '',
+                step_two_visibility = 'hidden'
+            )
+
+@dashboard.route('/retrysells')
+def retrysells():
+    user = create_user()
+
+    if isinstance(user, Response): # If the user needs to login ...
+        return user # redirect them to login.
+    else:
+
+        user.retry_make_withdrawal(user)
+        check_failed_transactions(user)
+
+        return render_template(
+            'dashboard.html',
+            native_currency = user.native_currency,
+            baskets=get_basket_names(),
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+
 def create_user():
     """
     Creates the user and stores their tokens and current user in a session variable. If the user just logged in, callbacks to Coinbase to create the user. If the user has already logged in, creates the user from the tokens session variables.
@@ -197,3 +242,11 @@ def get_basket_names():
 
     return ['Default Basket']
 
+def check_failed_transactions(user):
+    first_failed_buy = FailedBuyModel.query.filter_by(user_id = user.coinbase_id).first()
+    first_failed_sell = FailedSellModel.query.filter_by(user_id = user.coinbase_id).first()
+
+    if first_failed_buy:
+        flash('Oh no! Some of your buys did not process.', 'error')
+    if first_failed_sell:
+        flash('Oh no! Some of your sells did not process.', 'error')

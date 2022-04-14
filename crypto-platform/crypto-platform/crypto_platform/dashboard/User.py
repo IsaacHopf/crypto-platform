@@ -8,6 +8,7 @@ from coinbase.wallet.error import RateLimitExceededError, UnverifiedEmailError
 from flask import flash, session
 from  datetime import datetime, timedelta
 import threading
+import time
 from crypto_platform import connect
 from crypto_platform.dashboard import notify 
 
@@ -24,7 +25,7 @@ class User(object):
         try:
             self.client = OAuthClient(tokens['access_token'], tokens['refresh_token']) # The client used to connect to the user's Coinbase account.
         except RateLimitExceededError as e:
-            flash('Oops, an error occurred, please try logging in again in a minute. Error Code: ' + str(e), 'error')
+            flash('Oops, an error occurred, please try logging in again in an hour. Error Code: ' + str(e), 'error')
         except UnverifiedEmailError:
             flash('Please verify your Coinbase email before proceeding.', 'error')
         except Exception as e:
@@ -57,15 +58,6 @@ class User(object):
             if UserModel.query.get(self.coinbase_id) is None: # If the user does not exist in the database ...
                 self.__add_user_to_database() # add them.
 
-    def __add_user_to_database(self):
-        """Adds the current user to the database."""
-        new_user = UserModel(
-            id = self.coinbase_id,
-            email = self.email)
-
-        db.session.add(new_user)
-        db.session.commit()
-
     def __get_cash_payment_method_id(self):
         """Gets the user's Cash payment method. This payment method always exists and links directly to the user's Cash wallet (which is in their native currency)."""
         for payment_method in self.payment_methods['data']:
@@ -73,9 +65,9 @@ class User(object):
                 return payment_method['id']
 
     def __get_bank_payment_method_id(self):
-        """Gets the bank payment method the user added. If they have not added a bank payment method, asks them to add one."""
+        """Gets the bank payment method the user added. If they have not added a bank payment method, raises an exception."""
         for payment_method in self.payment_methods['data']:
-            if re.search("bank_account", payment_method['type']) is not None and payment_method['allow_withdraw'] == True: # The type of a bank payment method always contains "bank_account"
+            if re.search("bank_account", payment_method['type']) is not None and payment_method['allow_withdraw'] == True: # The type of a bank payment method always contains "bank_account".
                 return payment_method['id']
 
         # If the user has not added their bank payment method
@@ -99,14 +91,17 @@ class User(object):
                         currency = self.native_currency, # in the user's native currency.
                         payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
 
-            except Exception as e: # If there was an exception ...
-                if retries < 29:
+            except RateLimitExceededError: # If the rate limit was exceeded ...
+                raise RateLimitExceededError
+
+            except Exception as e: # If there was another exception ...
+                nonlocal retries
+                if retries < 3:
                     retries += 1
-                    timer = threading.Timer(60.0, transaction) # try again in a minute.
-                    timer.start()
-                else: # If tried 29 times ...
-                    flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash the error ...
-                    notify.send_transaction_error_notification(self.email, e) # and send an email notification.
+                    timer = time.sleep(1) # try again in a second.
+                    transaction()
+                else: # If tried 3 times ...
+                    raise Exception(e)
 
         transaction()
 
@@ -128,14 +123,17 @@ class User(object):
                                 currency = self.native_currency, # in the user's native currency.
                                 payment_method = self.bank_payment_method_id) # Pays with the user's bank payment method.
 
-            except Exception as e: # If there was an exception ...
-                if retries < 29:
+            except RateLimitExceededError: # If the rate limit was exceeded ...
+                raise RateLimitExceededError
+
+            except Exception as e: # If there was another exception ...
+                nonlocal retries
+                if retries < 3:
                     retries += 1
-                    timer = threading.Timer(60.0, transaction) # try again in a minute.
-                    timer.start()
-                else: # If tried 29 times ...
-                    flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash the error ...
-                    notify.send_transaction_error_notification(self.email, e) # and send an email notification.
+                    timer = time.sleep(1) # try again in a second.
+                    transaction()
+                else: # If tried 3 times ...
+                    raise Exception(e)
 
         transaction()    
 
@@ -147,13 +145,31 @@ class User(object):
         total: the total that will be spent (in the user's native currency)
         return: the buy order (what it would look like had the buy been processed), as a dict
         """
-        account_id = self.client.get_account(crypto)['id'] # Finds the account, or wallet, of the specified cryptocurrency
+        retries = 0
 
-        return self.client.buy(account_id, # Buys the specified cryptocurrency.
-                               total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                               currency = self.native_currency, # in the user's native currency.
-                               commit = False, # Prevents the buy order from processing.
-                               quote = True) # Generates the buy order (what it would look like had the buy been processed).
+        def transaction():
+            try:
+                account_id = self.client.get_account(crypto)['id'] # Finds the account, or wallet, of the specified cryptocurrency
+
+                return self.client.buy(account_id, # Buys the specified cryptocurrency.
+                                       total = total, # Buys the specified total (a portion of this total is used for fees) ...
+                                       currency = self.native_currency, # in the user's native currency.
+                                       commit = False, # Prevents the buy order from processing.
+                                       quote = True) # Generates the buy order (what it would look like had the buy been processed).
+
+            except RateLimitExceededError: # If the rate limit was exceeded ...
+                raise RateLimitExceededError
+
+            except Exception as e: # If there was another exception ...
+                nonlocal retries
+                if retries < 3:
+                    retries += 1
+                    timer = time.sleep(1) # try again in a second.
+                    transaction()
+                else: # If tried 3 times ...
+                    raise Exception(e)
+
+        transaction()  
 
     def sell(self, crypto, amount):
         """
@@ -173,14 +189,17 @@ class User(object):
                                     currency = self.native_currency, # in the user's native currency.
                                     payment_method = self.cash_payment_method_id) # Deposits the money into the user's Cash wallet.
 
-            except Exception as e: # If there was an exception ...
-                if retries < 29:
+            except RateLimitExceededError: # If the rate limit was exceeded ...
+                raise RateLimitExceededError
+
+            except Exception as e: # If there was another exception ...
+                nonlocal retries
+                if retries < 3:
                     retries += 1
-                    timer = threading.Timer(60.0, transaction) # try again in a minute.
-                    timer.start()
-                else: # If tried 29 times ...
-                    flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash the error ...
-                    notify.send_transaction_error_notification(self.email, e) # and send an email notification.
+                    timer = time.sleep(1) # try again in a second.
+                    transaction()
+                else: # If tried 3 times ...
+                    raise Exception(e)
 
         transaction()
 
@@ -201,14 +220,17 @@ class User(object):
                                 currency = self.native_currency, # in the user's native currency.
                                 payment_method = self.bank_payment_method_id) # Deposits the money into the user's bank payment method.
 
-            except Exception as e: # If there was an exception ...
-                if retries < 29:
+            except RateLimitExceededError as e: # If the rate limit was exceeded ...
+                flash('Oops, your withdraw was not processed, please try again in an hour. Error Code: ' + str(e), 'error') # flash rate limit error message.
+
+            except Exception as e: # If there was another exception ...
+                nonlocal retries
+                if retries < 3:
                     retries += 1
-                    timer = threading.Timer(60.0, transaction) # try again in a minute.
-                    timer.start()
-                else: # If tried 29 times ...
-                    flash('Oops, your investment was not processed, please contact support. Error Code: ' + str(e), 'error') # flash the error ...
-                    notify.send_transaction_error_notification(self.email, e) # and send an email notification.
+                    timer = time.sleep(1) # try again in a second.
+                    transaction()
+                else: # If tried 3 times ...
+                    flash('Oops, your withdraw was not processed, please try again in an hour. Error Code: ' + str(e), 'error') # flash other error message.
 
         transaction()
 
@@ -220,6 +242,15 @@ class User(object):
         """
         balance = float(self.client.get_account(self.native_currency)['balance']['amount'])
         return balance
+
+    def __add_user_to_database(self):
+        """Adds the current user to the database."""
+        new_user = UserModel(
+            id = self.coinbase_id,
+            email = self.email)
+
+        db.session.add(new_user)
+        db.session.commit()
 
     def logout(self):
         """Logs out the user by deleting their tokens session variable and revoking their access token."""
