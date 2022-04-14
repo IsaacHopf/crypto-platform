@@ -1,0 +1,122 @@
+﻿/* Success Popup*/
+.success-popup {
+    background-color: mediumseagreen;
+    width: 80%;
+    padding: 1%;
+    position: fixed;
+    left: 10%;
+    top: 2.5%;
+    border-radius: 8px;
+    z-index: 1000000;
+}
+
+    .success-popup h4 {
+        color: white;
+        display: inline;
+        text-align: left;
+        font-size: 20px;
+        margin-right: 1rem;
+    }
+
+    .success-popup button {
+        display: inline-block;
+        padding: 0;
+        padding-left: 2em;
+        border-radius: 0;
+        background-color: mediumseagreen;
+        -webkit-transition: none;
+        transition: none;
+        color: none;
+        font-size: 16px;
+        line-height: 21px;
+        text-align: right;
+        text-decoration: none;
+    }
+
+/* Error Popup */
+.error-popup {
+    background-color: lightcoral;
+    width: 80%;
+    padding: 1%;
+    position: fixed;
+    left: 10%;
+    top: 2.5%;
+    border-radius: 8px;
+    z-index: 1000000;
+}
+
+    .error-popup h4 {
+        color: white;
+        display: inline;
+        text-align: left;
+        font-size: 20px;
+        margin-right: 1rem;
+    }
+
+    .error-popup a {
+        display: inline;
+        font-size: 20px;
+    }
+
+    .error-popup button {
+        display: inline-block;
+        padding: 0;
+        padding-left: 2em;
+        border-radius: 0;
+        background-color: lightcoral;
+        -webkit-transition: none;
+        transition: none;
+        color: none;
+        font-size: 16px;
+        line-height: 21px;
+        text-align: right;
+        text-decoration: none;
+    }
+
+/* Form Popup */
+.form-popup {
+    display: none;
+    position: fixed;
+    top: 10%;
+    left: 2%;
+    border: 3px solid #f1f1f1;
+    z-index: 100000;
+}
+
+.form-container {
+    max-width: 300px;
+    padding: 10px;
+    background-color: white;
+}
+
+    .form-container input[type=number] {
+        width: 100%;
+        padding: 15px;
+        margin: 5px 0 22px 0;
+        border: none;
+        background: #f1f1f1;
+    }
+
+    .form-container input[type=number]:focus {
+        background-color: #ddd;
+        outline: none;
+    }
+
+    .form-container .btn {
+        background-color: #04AA6D;
+        color: white;
+        padding: 16px 20px;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: 10px;
+        opacity: 0.8;
+    }
+
+    .form-container .cancel {
+        background-color: red;
+    }
+
+    .form-container .btn:hover, .open-button:hover {
+        opacity: 1;
+    }

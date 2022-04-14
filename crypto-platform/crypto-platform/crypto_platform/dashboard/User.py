@@ -37,7 +37,7 @@ class User(object):
         try:
             self.bank_payment_method_id = self.__get_bank_payment_method_id() # The id of the bank payment method the user added.
         except:
-            flash('Please add your bank account as a payment method on Coinbase before proceeding.', 'error')
+            flash('Please add your bank account as a payment method on Coinbase before proceeding.', 'addbankerror')
 
         """Get the current user's information."""
         if current_user is None:

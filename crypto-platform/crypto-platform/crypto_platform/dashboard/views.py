@@ -244,6 +244,6 @@ def check_failed_transactions(user):
     first_failed_sell = FailedSellModel.query.filter_by(user_id = user.coinbase_id).first()
 
     if first_failed_buy:
-        flash('Oh no! Some of your buys did not process.', 'error')
+        flash('Oh no! Some of your buys did not process.', 'failedbuywarning')
     if first_failed_sell:
-        flash('Oh no! Some of your sells did not process.', 'error')
+        flash('Oh no! Some of your sells did not process.', 'failedsellwarning')

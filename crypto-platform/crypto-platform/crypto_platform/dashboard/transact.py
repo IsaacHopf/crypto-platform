@@ -16,7 +16,7 @@ def deposit(user, amount):
     except Exception as e:
         flash('Oh no! Your deposit did not process, please try again in an hour. Error Code: ' + str(e), 'error')
     else:
-        flash('Your deposit processed successfully! You should receive an email from Coinbase.')
+        flash('Your deposit processed successfully! You should receive an email from Coinbase.', 'success')
 
 def buy_basket(user, basket, invest_amount):
     """
@@ -57,7 +57,7 @@ def buy_basket(user, basket, invest_amount):
         if num_failed_buys > 0:
             flash('Oh no! {} of your {} buys did not process, please retry in an hour. Error Code: {}'.format(num_failed_buys, num_buys, last_error), 'error')
         else:
-            flash('Your buys processed successfully! You should receive several emails from Coinbase.')
+            flash('Your buys processed successfully! You should receive several emails from Coinbase.', 'success')
 
 def retry_buy_basket(user):
     """
@@ -92,7 +92,7 @@ def retry_buy_basket(user):
         if num_failed_buys > 0:
             flash('Oh no! {} of your {} buys did not process, please retry in an hour. Error Code: {}'.format(num_failed_buys, num_buys, last_error), 'error')
         else:
-            flash('Your buys processed successfully! You should receive several emails from Coinbase.')
+            flash('Your buys processed successfully! You should receive several emails from Coinbase.', 'success')
 
 def sell_basket(user, basket, invested_amount):
     """
@@ -130,7 +130,7 @@ def sell_basket(user, basket, invested_amount):
     if num_failed_sells > 0:
         flash('Oh no! {} of your {} sells did not process, please retry in an hour. Error Code: {}'.format(num_failed_sells, num_sells, last_error), 'error')     
     else:
-        flash('Your sells processed successfully! You should receive several emails from Coinbase.')
+        flash('Your sells processed successfully! You should receive several emails from Coinbase.', 'success')
 
 def retry_sell_basket(user):
     """
@@ -162,7 +162,7 @@ def retry_sell_basket(user):
     if num_failed_sells > 0:
         flash('Oh no! {} of your {} sells did not process, please retry in an hour. Error Code: {}'.format(num_failed_sells, num_sells, last_error), 'error')     
     else:
-        flash('Your sells processed successfully! You should receive several emails from Coinbase.')
+        flash('Your sells processed successfully! You should receive several emails from Coinbase.', 'success')
 
 def withdraw(user, amount):
     """Withdraws funds for the user."""
@@ -174,7 +174,7 @@ def withdraw(user, amount):
         except Exception as e:
             flash('Oh no! Your withdraw did not process, please try again in an hour. Error Code: ' + str(e), 'error')
         else:
-            flash('Your withdraw processed successfully! You should receive an email from Coinbase.')
+            flash('Your withdraw processed successfully! You should receive an email from Coinbase.', 'success')
 
 
     
