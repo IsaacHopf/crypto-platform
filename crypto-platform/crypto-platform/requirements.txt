@@ -2,3 +2,4 @@ Flask~=1.1
 Coinbase
 Flask-SQLAlchemy
 Flask-Mail
+markupsafe==2.0.1
