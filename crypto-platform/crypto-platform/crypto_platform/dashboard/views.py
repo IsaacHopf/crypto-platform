@@ -11,7 +11,7 @@ from crypto_platform.dashboard import transact, taxlossharvest
 from crypto_platform.dashboard.User import User
 
 # For the Database
-from crypto_platform.models import FailedBuyModel, FailedSellModel
+from crypto_platform.models import UserModel, BasketModel, BasketCryptoPercentageModel, UserBasketModel, FailedBuyModel, FailedSellModel
 
 dashboard = Blueprint('dashboard', __name__, url_prefix='/dashboard', 
                       template_folder='templates',
@@ -31,7 +31,7 @@ def home():
         'dashboard.html',
         cash_wallet_balance = user.get_cash_wallet_balance(),
         native_currency = user.native_currency,
-        baskets=get_basket_names(),
+        basket_names = get_basket_names(),
         step_one_visibility = '',
         step_two_visibility = 'hidden'
     )
@@ -51,7 +51,7 @@ def deposit():
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -63,7 +63,7 @@ def deposit():
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -84,17 +84,14 @@ def buybasket():
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
     else:
-        #selected_basket = BasketModel.query.filter_by(name='selected_basket')
-        #get crypto percentages
-        selected_basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
 
         if re.match("^\d*", str(invest_amount)): # If the selected basket name and invest amount exist and if the invest amount is a number ...
-            transact.buy_basket(user, selected_basket, invest_amount) # make the investment.
+            transact.buy_basket(user, selected_basket_name, invest_amount) # make the investment.
 
         check_failed_transactions(user)
 
@@ -102,7 +99,7 @@ def buybasket():
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -122,7 +119,7 @@ def sellbasket():
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -134,7 +131,7 @@ def sellbasket():
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -154,7 +151,7 @@ def withdraw():
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -166,7 +163,7 @@ def withdraw():
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -184,7 +181,7 @@ def testscripts():
     return render_template(
         'dashboard.html',
         native_currency = user.native_currency,
-        baskets=get_basket_names(),
+        basket_names = get_basket_names(),
         step_one_visibility = '',
         step_two_visibility = 'hidden'
     )
@@ -201,7 +198,7 @@ def checkharvest():
     return render_template(
         'dashboard.html',
         native_currency = user.native_currency,
-        baskets=get_basket_names(),
+        basket_names = get_basket_names(),
         data=data,
         step_one_visibility = 'hidden',
         step_two_visibility = ''
@@ -219,7 +216,7 @@ def testharvest():
     return render_template(
         'dashboard.html',
         native_currency = user.native_currency,
-        baskets=get_basket_names(),
+        basket_names = get_basket_names(),
         data=data,
         step_one_visibility = 'hidden',
         step_two_visibility = ''
@@ -238,7 +235,7 @@ def retrybuys():
     return render_template(
             'dashboard.html',
             native_currency = user.native_currency,
-            baskets=get_basket_names(),
+            basket_names = get_basket_names(),
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -256,7 +253,7 @@ def retrysells():
     return render_template(
         'dashboard.html',
         native_currency = user.native_currency,
-        baskets=get_basket_names(),
+        basket_names = get_basket_names(),
         step_one_visibility = '',
         step_two_visibility = 'hidden'
     )
@@ -304,15 +301,14 @@ def create_user():
 
 def get_basket_names():
     """Gets the names of all baskets in the database."""
-    #baskets = BasketModel.query.All()
-    #basket_names = []
+    baskets = BasketModel.query.all()
 
-	#for basket in baskets:
-	#	basket_names.append(basket.name)
+    basket_names = []
 
-    #return basket_names
+    for basket in baskets:
+        basket_names.append(basket.name)
 
-    return ['Default Basket']
+    return basket_names
 
 def check_failed_transactions(user):
     """

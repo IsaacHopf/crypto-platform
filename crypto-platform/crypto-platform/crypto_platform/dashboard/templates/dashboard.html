@@ -166,12 +166,12 @@
                         <h2>Buy Basket</h2>
 
                         <h3>Select the basket to buy:</h3>
-                        {% for basket in baskets %}
-                        <input type="radio" name="basket-to-buy" id="{{ basket }}" value="{{ basket }}" required />
-                        <label for="{{ basket }}">{{ basket }}</label><br />
+                        {% for basket_name in basket_names %}
+                        <input type="radio" name="basket-to-buy" id="{{ basket_name }}" value="{{ basket_name }}" required />
+                        <label for="{{ basket_name }}" style="display: inline;">{{ basket_name }}</label><br />
                         {% endfor %}
 
-                        <h3>Input the amount to invest (in {{ native_currency }}):</h3>
+                        <h3 style="margin-top: 10px;">Input the amount to invest (in {{ native_currency }}):</h3>
                         <input type="number" min="1" step="any" name="invest-amount" style="display: block; margin-bottom: 3rem;" required />
 
                         <button type="submit" class="btn">Invest</button>
@@ -200,12 +200,12 @@
                         <h2>Sell Basket</h2>
 
                         <h3>Select the basket to sell:</h3>
-                        {% for basket in baskets %}
-                        <input type="radio" name="basket-to-sell" id="{{ basket }}" value="{{ basket }}" required />
-                        <label for="{{ basket }}">{{ basket }}</label><br />
+                        {% for basket_name in basket_names %}
+                        <input type="radio" name="basket-to-sell" id="{{ basket_name }}" value="{{ basket_name }}" required />
+                        <label for="{{ basket_name }}" style="display: inline;">{{ basket_name }}</label><br />
                         {% endfor %}
 
-                        <button type="submit" class="btn">Sell</button>
+                        <button type="submit" class="btn" style="margin-top: 20px;">Sell</button>
                         <button type="button" class="btn cancel" onclick="closeSellBasketForm()">Close</button>
                     </form>
                 </div>
