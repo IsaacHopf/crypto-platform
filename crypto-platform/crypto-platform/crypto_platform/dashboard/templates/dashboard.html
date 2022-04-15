@@ -20,7 +20,7 @@
     <link href="images/webclip.png" rel="apple-touch-icon">
 </head>
 
-<body class="body">
+<body class="body" onload="openWebForms()">
     <div data-collapse="medium" data-animation="default" data-duration="400" data-no-scroll="1" data-easing="ease" data-easing2="ease" role="banner" class="left-navigation w-nav">
         <a href="#" class="logo-link w-nav-brand">
             <h1 class="brand-text">CryptoPlatform</h1>
@@ -228,10 +228,46 @@
         <!--Tax-Loss Harvest Section-->
         <section id="taxlossharvest" class="section section-gray wf-section">
             <div class="w-container">
+
+
                 <div class="section-title-group">
                     <h2 class="section-heading centered">Tax-Loss Harvest</h2>
                     <div class="section-subheading center">Check for tax-loss harvest potential and confirm to tax-loss harvest.</div>
                 </div>
+
+                <button onclick="openTaxLossHarvestForm()" data-w-id="c10ff72c-a249-5d39-9e24-ee1059ebae88" style="background-color:rgb(68,114,196)" class="button-2 w-button">Check For Tax Loss Harvesting Potential</button>
+
+                <!--Tax loss harvest form-->
+                <div class="form-popup" id="taxLossHarvestForm">
+                    <form action="{{ url_for('dashboard.taxlossharvestUI') }}" method="GET" class="form-container">
+                        <h2>Tax Loss Harvest</h2>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">SELL</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">BUY</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                {% for row in data %}
+                                <tr>
+                                    {% for cell in row %}
+                                    <td> {{ cell }} </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <button type="submit" class="btn">Check</button>
+                        <button type="button" class="btn cancel" onclick="closeTaxLossHarvestForm()">Close</button>
+                    </form>
+                </div>
+
+
 
             </div>
         </section>
@@ -271,43 +307,7 @@
             <p><a href="{{ url_for('dashboard.withdraw') }}" class="btn btn-primary">Withdraw</a></p>
         </div>
 
-        <!--Tax Loss Harvesting Div-->
-        <div>
 
-            <h1>Tax Loss Harvesting</h1>
-            <table class="table {{step_two_visibility}}">
-                <thead>
-                    <tr>
-                        <th scope="col">SELL</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">BUY</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                    {% for row in data %}
-                    <tr>
-                        {% for cell in row %}
-                        <td> {{ cell }} </td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <p>
-                <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_one_visibility }}">check for harvest potential&raquo;</a>
-                <a href="{{ url_for('dashboard.testharvest') }}" class="btn btn-primary btn-large {{ step_one_visibility }}">check for harvest potential test&raquo;</a>
-            </p>
-
-            <h2 class="{{ step_two_visibility }}">Confirm?</h2>
-            <p>
-                <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">Yes.&raquo;</a>
-                <a href="{{ url_for('dashboard.checkharvest') }}" class="btn btn-primary btn-large {{ step_two_visibility }}">No.&raquo;</a>
-            </p>
-
-        </div>
-
-        <p><a href=" {{ url_for('dashboard.testscripts') }} " class="btn btn-primary btn-large">TEST STUFFS &raquo;</a></p>
 
 
 

@@ -2,7 +2,7 @@
 Routes and views for the dashboard pages.
 """
 
-from flask import Blueprint, render_template, session, request, flash
+from flask import Flask, Blueprint, render_template, session, request, flash
 from datetime import datetime, timedelta
 import re
 
@@ -22,6 +22,7 @@ def home():
     """Handles the callback to Coinbase and renders the Dashboard page."""
     try:
         user = create_user()
+
     except:
         return connect.coinbase_login()
 
@@ -186,20 +187,22 @@ def testscripts():
         step_two_visibility = 'hidden'
     )
 
-@dashboard.route('/checkharvest')
-def checkharvest():
+@dashboard.route('/taxlossharvestUI', methods=['GET', 'POST'])
+def taxlossharvestUI():
     try:
         user = create_user()
     except:
         return connect.coinbase_login()
 
-    data = taxlossharvest.process_investments(user)
+
+    #data = taxlossharvest.process_investments(user)
 
     return render_template(
         'dashboard.html',
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
-        data=data,
+        data = taxlossharvest.use_test_data(user),
+        showTaxLossHarvestForm = "True",
         step_one_visibility = 'hidden',
         step_two_visibility = ''
     )

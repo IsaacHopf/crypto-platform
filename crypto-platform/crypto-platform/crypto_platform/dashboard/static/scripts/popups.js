@@ -31,6 +31,14 @@ function closeWithdrawForm() {
     document.getElementById("withdrawForm").style.display = "none";
 }
 
+function openTaxLossHarvestForm() {
+    document.getElementById("taxLossHarvestForm").style.display = "block";
+}
+
+function closeTaxLossHarvestForm() {
+    document.getElementById("taxLossHarvestForm").style.display = "none";
+}
+
 //Other Popups
 function closeSuccessPopup() {
     document.getElementById("successPopup").style.display = "none";
@@ -46,4 +54,11 @@ function closeFailedBuyErrorPopup() {
 
 function closeFailedSellErrorPopup() {
     document.getElementById("failedsellerrorPopup").style.display = "none";
+}
+
+//Open web forms on page load
+function openWebForms() {
+    if ("{{ showTaxLossHarvestForm }}" == "True") {
+        openTaxLossHarvestForm();
+    }
 }

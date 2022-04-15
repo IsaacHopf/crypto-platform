@@ -16,7 +16,7 @@ scope = 'wallet:accounts:read,wallet:payment-methods:read,wallet:deposits:create
 
 def coinbase_login():
     """Directs the user to login through Coinbase."""
-    auth_url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id={}&redirect_uri={}&state={}&scope={}'.format(client_id, redirect_uri, state, scope)
+    auth_url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id={}&redirect_uri={}&state={}&scope={}&account=all'.format(client_id, redirect_uri, state, scope)
     return redirect(auth_url)
 
 def coinbase_callback():
