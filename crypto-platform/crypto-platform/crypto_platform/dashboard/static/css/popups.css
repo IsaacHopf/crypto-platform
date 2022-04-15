@@ -1,13 +1,19 @@
-﻿/* Success Popup*/
-.success-popup {
-    background-color: mediumseagreen;
-    width: 80%;
-    padding: 1%;
+﻿.popup-container {
     position: fixed;
     left: 10%;
     top: 2.5%;
-    border-radius: 8px;
     z-index: 1000000;
+    width: 80%;
+}
+
+/* Success Popup*/
+.success-popup {
+    background-color: mediumseagreen;
+    width: 100%;
+    padding: 1%;
+    margin-bottom: 1%;
+    border-radius: 8px;
+    z-index: 1000002;
 }
 
     .success-popup h4 {
@@ -36,13 +42,11 @@
 /* Error Popup */
 .error-popup {
     background-color: lightcoral;
-    width: 80%;
+    width: 100%;
     padding: 1%;
-    position: fixed;
-    left: 10%;
-    top: 2.5%;
+    margin-bottom: 1%;
     border-radius: 8px;
-    z-index: 1000000;
+    z-index: 1000002;
 }
 
     .error-popup h4 {
