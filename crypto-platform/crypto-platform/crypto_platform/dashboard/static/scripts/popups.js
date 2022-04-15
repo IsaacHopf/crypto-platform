@@ -31,6 +31,22 @@ function closeWithdrawForm() {
     document.getElementById("withdrawForm").style.display = "none";
 }
 
+function openRetryBuysForm() {
+    document.getElementById("retryBuysForm").style.display = "block";
+}
+
+function closeRetryBuysForm() {
+    document.getElementById("retryBuysForm").style.display = "none";
+}
+
+function openRetrySellsForm() {
+    document.getElementById("retrySellsForm").style.display = "block";
+}
+
+function closeRetrySellsForm() {
+    document.getElementById("retrySellsForm").style.display = "none";
+}
+
 //Other Popups
 function closeSuccessPopup() {
     document.getElementById("successPopup").style.display = "none";

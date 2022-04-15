@@ -24,14 +24,18 @@ def home():
         user = create_user()
     except:
         return connect.coinbase_login()
-
-    check_failed_transactions(user)
+    
+    failed_buys_basket_names = get_failed_buys_basket_names(user)
+    failed_sells_basket_names = get_failed_sells_basket_names(user)
 
     return render_template(
         'dashboard.html',
         cash_wallet_balance = user.get_cash_wallet_balance(),
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
+        user_basket_names = get_user_basket_names(user),
+        failed_buys_basket_names = failed_buys_basket_names,
+        failed_sells_basket_names = failed_sells_basket_names,
         step_one_visibility = '',
         step_two_visibility = 'hidden'
     )
@@ -47,15 +51,26 @@ def deposit():
     try:
         deposit_amount = float(request.form['deposit-amount'])
     except:
+
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
+
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
     else:
+
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
+
         if re.match("^\d*", str(deposit_amount)): # If the deposit amount exists and is a number ...
             transact.deposit(user, deposit_amount) # make the deposit.
 
@@ -64,6 +79,9 @@ def deposit():
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -80,11 +98,17 @@ def buybasket():
         selected_basket_name = request.form['basket-to-buy']
         invest_amount = float(request.form['invest-amount'])
     except:
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
+
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -93,13 +117,17 @@ def buybasket():
         if re.match("^\d*", str(invest_amount)): # If the selected basket name and invest amount exist and if the invest amount is a number ...
             transact.buy_basket(user, selected_basket_name, invest_amount) # make the investment.
 
-        check_failed_transactions(user)
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
 
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -115,23 +143,38 @@ def sellbasket():
     try:
         selected_basket_name = request.form['basket-to-sell']
     except:
-        return render_template(
-            'dashboard.html',
-            cash_wallet_balance = user.get_cash_wallet_balance(),
-            native_currency = user.native_currency,
-            basket_names = get_basket_names(),
-            step_one_visibility = '',
-            step_two_visibility = 'hidden'
-        )
-    else:
-        basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
-        transact.sell_basket(user, basket, user.get_cash_wallet_balance())
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
 
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+    else:
+
+        basket = transact.get_basket_from_database(selected_basket_name)
+        user_basket = transact.get_user_basket_from_database(user, basket)
+
+        transact.sell_basket(user, selected_basket_name, user_basket.invested_amount)
+
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
+
+        return render_template(
+            'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            native_currency = user.native_currency,
+            basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -147,15 +190,25 @@ def withdraw():
     try:
         withdraw_amount = float(request.form['withdraw-amount'])
     except:
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
+
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
     else:
+
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
+
         if re.match("^\d*", str(withdraw_amount)): # If the withdraw amount exists and is a number ...
             transact.withdraw(user, withdraw_amount) # make the withdraw.
 
@@ -164,6 +217,9 @@ def withdraw():
             cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
@@ -199,6 +255,7 @@ def checkharvest():
         'dashboard.html',
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
+        user_basket_names = get_user_basket_names(user),
         data=data,
         step_one_visibility = 'hidden',
         step_two_visibility = ''
@@ -217,46 +274,93 @@ def testharvest():
         'dashboard.html',
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
+        user_basket_names = get_user_basket_names(user),
         data=data,
         step_one_visibility = 'hidden',
         step_two_visibility = ''
     )
 
-@dashboard.route('/retrybuys')
+@dashboard.route('/retrybuys', methods=['POST'])
 def retrybuys():
     try:
         user = create_user()
     except:
         return connect.coinbase_login()
 
-    transact.retry_buy_basket(user)
-    check_failed_transactions(user)
+    try:
+        selected_basket_name = request.form['basket-to-retry-buying']
+    except:
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
 
-    return render_template(
+        return render_template(
             'dashboard.html',
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+    else:
+
+        transact.retry_buy_basket(user, selected_basket_name)
+
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
+
+        return render_template(
+            'dashboard.html',
+            native_currency = user.native_currency,
+            basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
             step_two_visibility = 'hidden'
         )
 
-@dashboard.route('/retrysells')
+@dashboard.route('/retrysells', methods=['POST'])
 def retrysells():
     try:
         user = create_user()
     except:
         return connect.coinbase_login()
 
-    transact.retry_sell_basket(user)
-    check_failed_transactions(user)
+    try:
+        selected_basket_name = request.form['basket-to-retry-selling']
+    except:
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
 
-    return render_template(
-        'dashboard.html',
-        native_currency = user.native_currency,
-        basket_names = get_basket_names(),
-        step_one_visibility = '',
-        step_two_visibility = 'hidden'
-    )
+        return render_template(
+            'dashboard.html',
+            native_currency = user.native_currency,
+            basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+    else:
+
+        transact.retry_sell_basket(user, selected_basket_name)
+
+        failed_buys_basket_names = get_failed_buys_basket_names(user)
+        failed_sells_basket_names = get_failed_sells_basket_names(user)
+
+        return render_template(
+            'dashboard.html',
+            native_currency = user.native_currency,
+            basket_names = get_basket_names(),
+            user_basket_names = get_user_basket_names(user),
+            failed_buys_basket_names = failed_buys_basket_names,
+            failed_sells_basket_names = failed_sells_basket_names,
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
 
 def create_user():
     """
@@ -310,16 +414,43 @@ def get_basket_names():
 
     return basket_names
 
-def check_failed_transactions(user):
-    """
-    Checks if the user has any failed transactions.
+def get_user_basket_names(user):
+    """Gets the names of the user's baskets."""
+    user_baskets = UserBasketModel.query.filter_by(user_id = user.coinbase_id).all()
+    return user_baskets
 
-    user: the user, represented as an object of the User class
-    """
-    first_failed_buy = FailedBuyModel.query.filter_by(user_id = user.coinbase_id).first()
-    first_failed_sell = FailedSellModel.query.filter_by(user_id = user.coinbase_id).first()
+def get_failed_buys_basket_names(user):
+    """Gets the basket names of the user's failed buys."""
+    failed_buys = FailedBuyModel.query.filter_by(user_id = user.coinbase_id).all()
 
-    if first_failed_buy:
-        flash('Oh no! Some of your buys did not process.', 'failedbuywarning')
-    if first_failed_sell:
-        flash('Oh no! Some of your sells did not process.', 'failedsellwarning')
+    if failed_buys:
+        basket_names = []
+
+        for failed_buy in failed_buys:
+            failed_buy_basket_id = failed_buy.basket_id
+            basket = BasketModel.query.filter_by(id = failed_buy_basket_id).first()
+            if basket.name not in basket_names:
+                basket_names.append(basket.name)
+
+        flash('Oh no! Some of your buys did not process.', 'failedbuyerror')
+        return basket_names
+    else:
+        return None
+
+def get_failed_sells_basket_names(user):
+    """Gets the basket names of the user's failed sells."""
+    failed_sells = FailedSellModel.query.filter_by(user_id = user.coinbase_id).all()
+
+    if failed_sells:
+        basket_names = []
+
+        for failed_sell in failed_sells:
+            failed_sell_basket_id = failed_sell.basket_id
+            basket = BasketModel.query.filter_by(id = failed_sell_basket_id).first()
+            if basket.name not in basket_names:
+                basket_names.append(basket.name)
+
+        flash('Oh no! Some of your sells did not process.', 'failedsellerror')
+        return basket_names
+    else:
+        return None
