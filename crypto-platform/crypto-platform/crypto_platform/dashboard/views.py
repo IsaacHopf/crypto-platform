@@ -257,7 +257,7 @@ def taxlossharvestUI():
         'dashboard.html',
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
-        user_basket_names = get_user_basket_names(user)
+        user_basket_names = get_user_basket_names(user),
         data = taxlossharvest.use_test_data(user),
         showTaxLossHarvestForm = "True",
         step_one_visibility = 'hidden',
