@@ -1,10 +1,34 @@
-//Form Popup
-function openSelectBasketForm() {
-    document.getElementById("selectBasketForm").style.display = "block";
+//Form Popups
+function openDepositForm() {
+    document.getElementById("depositForm").style.display = "block";
 }
 
-function closeSelectBasketForm() {
-    document.getElementById("selectBasketForm").style.display = "none";
+function closeDepositForm() {
+    document.getElementById("depositForm").style.display = "none";
+}
+
+function openBuyBasketForm() {
+    document.getElementById("buyBasketForm").style.display = "block";
+}
+
+function closeBuyBasketForm() {
+    document.getElementById("buyBasketForm").style.display = "none";
+}
+
+function openSellBasketForm() {
+    document.getElementById("sellBasketForm").style.display = "block";
+}
+
+function closeSellBasketForm() {
+    document.getElementById("sellBasketForm").style.display = "none";
+}
+
+function openWithdrawForm() {
+    document.getElementById("withdrawForm").style.display = "block";
+}
+
+function closeWithdrawForm() {
+    document.getElementById("withdrawForm").style.display = "none";
 }
 
 //Other Popups

@@ -28,7 +28,8 @@
         <nav role="navigation" class="nav-menu w-nav-menu">
             <a href="#dashboard" class="nav-link w-nav-link">dashboard</a>
             <a href="#invest" class="nav-link w-nav-link">invest</a>
-            <a href="#deposit" class="nav-link w-nav-link">deposit or withdraw</a>
+            <a href="#sell" class="nav-link w-nav-link">sell</a>
+            <a href="#taxlossharvest" class="nav-link w-nav-link">tax-loss harvest</a>
             <a href="#accountsettings" class="nav-link w-nav-link">account settings</a>
             <a href="#contactus" class="nav-link w-nav-link">contact us</a>
         </nav>
@@ -82,24 +83,158 @@
             <div class="w-container">
                 <div class="section-title-group">
                     <h2 class="section-heading centered">dashboard</h2>
-                    <div class="section-subheading center">View all of your information at a glance.</div>
+                    <div class="section-subheading center">View all of your assets at a glance.</div>
                 </div>
             </div>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Balance (in {{ native_currency }})</th>
+                </tr>
+                <tr>
+                    <td>Cash Wallet</td>
+                    <td>{{ cash_wallet_balance }}</td>
+                </tr>
+            </table>
         </section>
 
         <section class="call-to-action-section wf-section">
             <div class="container w-container">
                 <div class="w-row">
                     <div class="w-col w-col-8">
-                        <h3 class="call-to-action-heading">Deposit funds for hands-free crypto investments.</h3>
+                        <h3 class="call-to-action-heading">Deposit funds into your Cash Wallet to get started!</h3>
                     </div>
                     <div class="align-right w-col w-col-4">
-                        <a href="#deposit" class="hollow-button white">Deposit</a>
+                        <a href="#invest" class="hollow-button white">Deposit</a>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!--Invest Section-->
+        <div id="invest" class="section-3 wf-section">
+            <div class="w-container">
+                <div class="section-title-group">
+                    <h2 class="section-heading centered">Invest in a Basket</h2>
+                    <div class="section-subheading center">Get started by <em>depositing</em> funds into your Cash Wallet. Then, you can <em>buy</em> your preferred basket(s).</div>
+                </div>
+
+                <div class="w-row">
+                    <div class="column-0-padding w-col w-col-3">
+                        <img src="images/feather-12-black.svg" width="100" alt="" class="grid-image">
+                        <h3>Basket 1</h3>
+                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
+                    </div>
+                    <div class="column-0-padding w-col w-col-3">
+                        <img src="images/feather-05-black.svg" width="100" alt="" class="grid-image">
+                        <h3>Basket 2</h3>
+                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
+                    </div>
+                    <div class="column-0-padding w-col w-col-3">
+                        <img src="images/feather-24-black.svg" width="100" alt="" class="grid-image">
+                        <h3>basket 3</h3>
+                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
+                    </div>
+                    <div class="column-0-padding w-col w-col-3">
+                        <img src="images/feather-66-black.svg" width="100" alt="" class="grid-image">
+                        <h3>basket 4</h3>
+                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
+                    </div>
+                </div>
+
+                <div class="div-block" style="margin-top: 60px;">
+                    <button onclick="openDepositForm()" data-w-id="c10ff72c-a249-5d39-9e24-ee1059ebae88" style="background-color:rgb(68,114,196)" class="button-2 w-button">Deposit</button>
+                    <button onclick="openBuyBasketForm()" data-w-id="51c177b8-da67-82f1-9811-0af8744685d6" style="background-color:rgb(68,114,196)" class="button-3 w-button">Buy</button>
+                </div>
+
+                <!--Deposit Form-->
+                <div class="form-popup" id="depositForm">
+                    <form action="{{ url_for('dashboard.deposit') }}" method="POST" class="form-container">
+                        <h2>Deposit</h2>
+
+                        <h3>Input the amount to deposit:</h3>
+                        <input type="number" min="1" step="any" name="deposit-amount" style="display: block; margin-bottom: 3rem;" required />
+
+                        <button type="submit" class="btn">Deposit</button>
+                        <button type="button" class="btn cancel" onclick="closeDepositForm()">Close</button>
+                    </form>
+                </div>
+
+                <!--Buy Basket Form-->
+                <div class="form-popup" id="buyBasketForm">
+                    <form action="{{ url_for('dashboard.buybasket') }}" method="POST" class="form-container">
+                        <h2>Buy Basket</h2>
+
+                        <h3>Select the basket to buy:</h3>
+                        {% for basket in baskets %}
+                        <input type="radio" name="basket-to-buy" id="{{ basket }}" value="{{ basket }}" required />
+                        <label for="{{ basket }}">{{ basket }}</label><br />
+                        {% endfor %}
+
+                        <h3>Input the amount to invest (in {{ native_currency }}):</h3>
+                        <input type="number" min="1" step="any" name="invest-amount" style="display: block; margin-bottom: 3rem;" required />
+
+                        <button type="submit" class="btn">Invest</button>
+                        <button type="button" class="btn cancel" onclick="closeBuyBasketForm()">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!--Sell Section-->
+        <div id="sell" class="section-3 wf-section">
+            <div class="w-container">
+                <div class="section-title-group">
+                    <h2 class="section-heading centered">Sell a Basket</h2>
+                    <div class="section-subheading center"> When you're ready to <em>sell</em>, you can sell your basket(s). Then, you can either reinvest in another basket or <em>withdraw</em> your funds.</div>
+                </div>
+
+                <div class="div-block">
+                    <button onclick="openSellBasketForm()" data-w-id="c10ff72c-a249-5d39-9e24-ee1059ebae88" style="background-color:rgb(68,114,196)" class="button-2 w-button">Sell</button>
+                    <button onclick="openWithdrawForm()" data-w-id="51c177b8-da67-82f1-9811-0af8744685d6" style="background-color:rgb(68,114,196)" class="button-3 w-button">Withdraw</button>
+                </div>
+
+                <!--Sell Basket Form-->
+                <div class="form-popup" id="sellBasketForm">
+                    <form action="{{ url_for('dashboard.deposit') }}" method="POST" class="form-container">
+                        <h2>Sell Basket</h2>
+
+                        <h3>Select the basket to sell:</h3>
+                        {% for basket in baskets %}
+                        <input type="radio" name="basket-to-sell" id="{{ basket }}" value="{{ basket }}" required />
+                        <label for="{{ basket }}">{{ basket }}</label><br />
+                        {% endfor %}
+
+                        <button type="submit" class="btn">Sell</button>
+                        <button type="button" class="btn cancel" onclick="closeSellBasketForm()">Close</button>
+                    </form>
+                </div>
+
+                <!--Withdraw Form-->
+                <div class="form-popup" id="withdrawForm">
+                    <form action="{{ url_for('dashboard.buybasket') }}" method="POST" class="form-container">
+                        <h2>Withdraw</h2>
+
+                        <h3>Input the amount to withdraw:</h3>
+                        <input type="number" min="1" step="any" name="withdraw-amount" style="display: block; margin-bottom: 3rem;" required />
+
+                        <button type="submit" class="btn">Withdraw</button>
+                        <button type="button" class="btn cancel" onclick="closeWithdrawForm()">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!--Tax-Loss Harvest Section-->
+        <section id="taxlossharvest" class="section section-gray wf-section">
+            <div class="w-container">
+                <div class="section-title-group">
+                    <h2 class="section-heading centered">Tax-Loss Harvest</h2>
+                    <div class="section-subheading center">Check for tax-loss harvest potential and confirm to tax-loss harvest.</div>
+                </div>
+
+            </div>
+        </section>
 
 
 
@@ -113,7 +248,7 @@
             <button class="btn-primary" onclick="openSelectBasketForm()">Invest</button>
 
             <div class="form-popup" id="selectBasketForm">
-                <form action="{{ url_for('dashboard.selectbasket') }}" method="POST" class="form-container">
+                <form action="{{ url_for('dashboard.buybasket') }}" method="POST" class="form-container">
                     <h2>Invest</h2>
                     <h3>Basket</h3>
                     {% for basket in baskets %}
@@ -179,57 +314,6 @@
 
 
 
-
-        <!--Invest-->
-        <section id="invest" class="section wf-section">
-            <div class="w-container">
-                <div class="section-title-group">
-                    <h2 class="section-heading centered">invest into a basket</h2>
-                    <div class="section-subheading center">Choose the crypto-currency basket to deposit your account balance into.</div>
-                </div>
-                <div class="w-row">
-                    <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-12-black.svg" width="100" alt="" class="grid-image">
-                        <h3>Basket 1</h3>
-                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
-                        <a href="#" class="link">Invest</a>
-                    </div>
-                    <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-05-black.svg" width="100" alt="" class="grid-image">
-                        <h3>Basket 2</h3>
-                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
-                        <a href="#" class="link">Invest</a>
-                    </div>
-                    <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-24-black.svg" width="100" alt="" class="grid-image">
-                        <h3>basket 3</h3>
-                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
-                        <a href="#" class="link">Invest</a>
-                    </div>
-                    <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-66-black.svg" width="100" alt="" class="grid-image">
-                        <h3>basket 4</h3>
-                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
-                        <a href="#" class="link">Invest</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!--Deposit-->
-        <div id="deposit" class="section-3 wf-section">
-            <div class="w-container">
-                <div class="section-title-group">
-                    <h2 class="section-heading centered">Deposit or withdraw</h2>
-                    <div class="section-subheading center">Choose the crypto-currency basket to deposit your account balance into.</div>
-                </div>
-                <div class="div-block">
-                    <a data-w-id="c10ff72c-a249-5d39-9e24-ee1059ebae88" style="background-color:rgb(68,114,196)" href="#" class="button-2 w-button">Deposit</a>
-                    <a data-w-id="51c177b8-da67-82f1-9811-0af8744685d6" style="background-color:rgb(68,114,196)" href="#" class="button-3 w-button">Withdraw</a>
-                </div>
-            </div>
-        </div>
-
         <!--Account Settings-->
         <div id="accountsettings" class="section-2 wf-section">
             <div class="w-container">
@@ -247,14 +331,14 @@
                         <img src="images/feather-05-black.svg" width="100" alt="" class="grid-image">
                         <h3>link accounts</h3>
                         <p>Please click the links below to link the appropriate accounts if not done so already.</p>
-                        <a href="https://www.coinbase.com/dashboard" class="link" target="_blank">Link to Coinbase Dashboard</a>
+                        <a href="https://www.coinbase.com/dashboard" class="link" target="_blank">Link Coinbase</a>
                         <a href="https://www.coinbase.com/settings/linked-accounts" class="link" target="_blank">Link Bank Account</a>
                     </div>
                     <div class="column-0-padding w-col w-col-3">
                         <img src="images/feather-24-black.svg" width="100" alt="" class="grid-image">
                         <h3>Contact us</h3>
                         <p>Have a suggestion or complaint you&#x27;d like for us to hear? Please contact us below!</p>
-                        <a href="#contact" class="link">Contact</a>
+                        <a href="#contactus" class="link">Contact</a>
                     </div>
                     <div class="column-0-padding w-col w-col-3">
                         <img src="images/feather-66-black.svg" width="100" alt="" class="grid-image">

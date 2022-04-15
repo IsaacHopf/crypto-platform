@@ -29,43 +29,110 @@ def home():
 
     return render_template(
         'dashboard.html',
+        cash_wallet_balance = user.get_cash_wallet_balance(),
         native_currency = user.native_currency,
         baskets=get_basket_names(),
         step_one_visibility = '',
         step_two_visibility = 'hidden'
     )
 
-@dashboard.route('/selectbasket', methods=['POST'])
-def selectbasket():
-    """Handles selecting a basket and investing."""
+@dashboard.route('/deposit', methods=['POST'])
+def deposit():
+    """Handles depositing funds into the user's Cash Wallet."""
     try:
         user = create_user()
     except:
         return connect.coinbase_login()
 
     try:
-        selected_basket_name = request.form['baskets']
-        invest_amount = float(request.form['investment-amount'])
+        deposit_amount = float(request.form['deposit-amount'])
     except:
         return render_template(
-        'dashboard.html',
-        native_currency = user.native_currency,
-        baskets=get_basket_names(),
-        step_one_visibility = '',
-        step_two_visibility = 'hidden'
-    )
+            'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            native_currency = user.native_currency,
+            baskets=get_basket_names(),
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+    else:
+        if re.match("^\d*", str(deposit_amount)): # If the deposit amount exists and is a number ...
+            transact.deposit(user, deposit_amount) # make the deposit.
+
+        return render_template(
+            'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            native_currency = user.native_currency,
+            baskets=get_basket_names(),
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+
+@dashboard.route('/buybasket', methods=['POST'])
+def buybasket():
+    """Handles buying a basket."""
+    try:
+        user = create_user()
+    except:
+        return connect.coinbase_login()
+
+    try:
+        selected_basket_name = request.form['basket-to-buy']
+        invest_amount = float(request.form['invest-amount'])
+    except:
+        return render_template(
+            'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            native_currency = user.native_currency,
+            baskets=get_basket_names(),
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
     else:
         #selected_basket = BasketModel.query.filter_by(name='selected_basket')
         #get crypto percentages
         selected_basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
 
-        if re.match("^\d*", str(invest_amount)): # If the basket name and investment amount exist and if the investment amount is a number ...
+        if re.match("^\d*", str(invest_amount)): # If the selected basket name and invest amount exist and if the invest amount is a number ...
             transact.buy_basket(user, selected_basket, invest_amount) # make the investment.
 
         check_failed_transactions(user)
 
         return render_template(
             'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            native_currency = user.native_currency,
+            baskets=get_basket_names(),
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+
+@dashboard.route('/sellbasket')
+def sellbasket():
+    """Handles selling a basket."""
+    try:
+        user = create_user()
+    except:
+        return connect.coinbase_login()
+
+    try:
+        selected_basket_name = request.form['basket-to-sell']
+    except:
+        return render_template(
+            'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            native_currency = user.native_currency,
+            baskets=get_basket_names(),
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+    else:
+        basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
+        transact.sell_basket(user, basket, user.get_cash_wallet_balance())
+
+        return render_template(
+            'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
             native_currency = user.native_currency,
             baskets=get_basket_names(),
             step_one_visibility = '',
@@ -80,16 +147,29 @@ def withdraw():
     except:
         return connect.coinbase_login()
 
-    basket = [['BTC', 0.4], ['ETH', 0.3], ['LTC', 0.2], ['ADA', 0.1]]
-    transact.sell_basket(user, basket, user.get_cash_wallet_balance())
+    try:
+        withdraw_amount = float(request.form['withdraw-amount'])
+    except:
+        return render_template(
+            'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            native_currency = user.native_currency,
+            baskets=get_basket_names(),
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
+    else:
+        if re.match("^\d*", str(withdraw_amount)): # If the withdraw amount exists and is a number ...
+            transact.withdraw(user, withdraw_amount) # make the withdraw.
 
-    return render_template(
-        'dashboard.html',
-        native_currency = user.native_currency,
-        baskets=get_basket_names(),
-        step_one_visibility = '',
-        step_two_visibility = 'hidden'
-    )
+        return render_template(
+            'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            native_currency = user.native_currency,
+            baskets=get_basket_names(),
+            step_one_visibility = '',
+            step_two_visibility = 'hidden'
+        )
 
 
 @dashboard.route('/testscripts')
