@@ -4,6 +4,7 @@ Routes and views for the dashboard pages.
 
 from flask import Flask, Blueprint, render_template, session, request, flash
 from datetime import datetime, timedelta
+import time
 import re
 
 from crypto_platform import connect
@@ -69,11 +70,13 @@ def deposit():
         )
     else:
 
+        if re.match("^\d*", str(deposit_amount)): # If the deposit amount exists and is a number ...
+            original_cash_wallet_balance = user.get_cash_wallet_balance()
+            transact.deposit(user, deposit_amount) # make the deposit.
+            wait_for_cash_wallet_change(user, original_cash_wallet_balance)
+
         failed_buys_basket_names = get_failed_buys_basket_names(user)
         failed_sells_basket_names = get_failed_sells_basket_names(user)
-
-        if re.match("^\d*", str(deposit_amount)): # If the deposit amount exists and is a number ...
-            transact.deposit(user, deposit_amount) # make the deposit.
 
         return render_template(
             'dashboard.html',
@@ -116,7 +119,9 @@ def buybasket():
     else:
 
         if re.match("^\d*", str(invest_amount)): # If the selected basket name and invest amount exist and if the invest amount is a number ...
+            original_cash_wallet_balance = user.get_cash_wallet_balance()
             transact.buy_basket(user, selected_basket_name, invest_amount) # make the investment.
+            wait_for_cash_wallet_change(user, original_cash_wallet_balance)
 
         failed_buys_basket_names = get_failed_buys_basket_names(user)
         failed_sells_basket_names = get_failed_sells_basket_names(user)
@@ -133,7 +138,7 @@ def buybasket():
             step_two_visibility = 'hidden'
         )
 
-@dashboard.route('/sellbasket')
+@dashboard.route('/sellbasket', methods=['POST'])
 def sellbasket():
     """Handles selling a basket."""
     try:
@@ -160,7 +165,9 @@ def sellbasket():
         )
     else:
 
+        original_cash_wallet_balance = user.get_cash_wallet_balance()
         transact.sell_basket(user, selected_basket_name)
+        wait_for_cash_wallet_change(user, original_cash_wallet_balance)
 
         failed_buys_basket_names = get_failed_buys_basket_names(user)
         failed_sells_basket_names = get_failed_sells_basket_names(user)
@@ -177,7 +184,7 @@ def sellbasket():
             step_two_visibility = 'hidden'
         )
 
-@dashboard.route('/withdraw')
+@dashboard.route('/withdraw', methods=['POST'])
 def withdraw():
     """Handles withdrawing."""
     try:
@@ -208,7 +215,9 @@ def withdraw():
         failed_sells_basket_names = get_failed_sells_basket_names(user)
 
         if re.match("^\d*", str(withdraw_amount)): # If the withdraw amount exists and is a number ...
+            original_cash_wallet_balance = user.get_cash_wallet_balance()
             transact.withdraw(user, withdraw_amount) # make the withdraw.
+            wait_for_cash_wallet_change(user, original_cash_wallet_balance)
 
         return render_template(
             'dashboard.html',
@@ -310,7 +319,9 @@ def retrybuys():
         )
     else:
 
+        original_cash_wallet_balance = user.get_cash_wallet_balance()
         transact.retry_buy_basket(user, selected_basket_name)
+        wait_for_cash_wallet_change(user, original_cash_wallet_balance)
 
         failed_buys_basket_names = get_failed_buys_basket_names(user)
         failed_sells_basket_names = get_failed_sells_basket_names(user)
@@ -353,7 +364,9 @@ def retrysells():
         )
     else:
 
+        original_cash_wallet_balance = user.get_cash_wallet_balance()
         transact.retry_sell_basket(user, selected_basket_name)
+        wait_for_cash_wallet_change(user, original_cash_wallet_balance)
 
         failed_buys_basket_names = get_failed_buys_basket_names(user)
         failed_sells_basket_names = get_failed_sells_basket_names(user)
@@ -482,6 +495,19 @@ def get_user_basket_balances(user):
         user_basket_balances.append([basket_name, basket_balance])
 
     return user_basket_balances
+
+def wait_for_cash_wallet_change(user, original_cash_wallet_balance):
+    retries = 0
+
+    def wait():
+        if original_cash_wallet_balance == user.get_cash_wallet_balance():
+            nonlocal retries
+            if retries < 10:
+                retries += 1
+                time.sleep(1)
+                wait()
+
+    wait()
 
             
 

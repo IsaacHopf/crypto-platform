@@ -49,17 +49,25 @@ def buy_basket(user, basket_name, invest_amount):
             num_buys += 1
 
             try:
-                quote = user.buy(crypto, buy_amount)
+                spot_price = float(user.client.get_spot_price(currency_pair = crypto + '-' + user.native_currency).amount)
+                buy_amount_in_crypto = buy_amount / spot_price
+
+                user.buy(crypto, buy_amount_in_crypto)
 
             except Exception as e:
                 num_failed_buys += 1
                 last_error = str(e)
 
-                add_failed_buy_to_database(user, basket, invest_amount, crypto, buy_amount)
+                add_failed_buy_to_database(user, basket, crypto, buy_amount)
 
             else:
-                amount = quote.amount.amount
-                add_user_basket_crypto_amount_to_database(user, basket, crypto, amount)
+                amount = buy_amount_in_crypto
+                user_basket_crypto_amount = get_user_basket_crypto_amount_from_database(user, basket, crypto)
+
+                if user_basket_crypto_amount:
+                    update_user_basket_crypto_amount_in_database(user_basket_crypto_amount, amount)
+                else:
+                    add_user_basket_crypto_amount_to_database(user, basket, crypto, amount)
 
         if num_failed_buys > 0:
             flash('Oh no! {} of your {} buys did not process, please retry in an hour. Error Code: {}'.format(num_failed_buys, num_buys, last_error), 'error')
@@ -67,10 +75,8 @@ def buy_basket(user, basket_name, invest_amount):
 
             user_basket = get_user_basket_from_database(user, basket) # Get the user basket if it exists.
 
-            if user_basket: # If the user basket already exists ...
-                update_user_basket_in_database(user_basket, invest_amount) # update it.
-            else: # If the user basket does not exist ...
-                add_user_basket_to_database(user, basket, invest_amount) # add it.
+            if not user_basket: # If the user basket does not exists ...
+                add_user_basket_to_database(user, basket) # add it.
 
             flash('Your buys processed successfully! You should receive several emails from Coinbase.', 'success')
 
@@ -84,11 +90,9 @@ def retry_buy_basket(user, basket_name):
     basket = get_basket_from_database(basket_name)
     failed_buys = get_failed_buys_from_database(user, basket)
     total_buy_amount = 0
-    invest_amount = 0
 
     for failed_buy in failed_buys:
         total_buy_amount += failed_buy.buy_amount
-        invest_amount = failed_buy.basket_invest_amount
 
     if user.get_cash_wallet_balance() < total_buy_amount:
         flash('Oh no! You do not have enough funds to invest. Please deposit more funds before retrying.', 'error')
@@ -105,7 +109,10 @@ def retry_buy_basket(user, basket_name):
             num_buys += 1
 
             try:
-                quote = user.buy(crypto, buy_amount)
+                spot_price = float(user.client.get_spot_price(currency_pair = crypto + '-' + user.native_currency).amount)
+                buy_amount_in_crypto = buy_amount / spot_price
+
+                user.buy(crypto, buy_amount_in_crypto)
 
             except Exception as e:
                 num_failed_buys += 1
@@ -114,18 +121,21 @@ def retry_buy_basket(user, basket_name):
             else:
                 remove_failed_buy_from_database(failed_buy)
 
-                amount = quote.amount.amount
-                add_user_basket_crypto_amount_to_database(user, basket, crypto, amount)
+                amount = buy_amount_in_crypto
+                user_basket_crypto_amount = get_user_basket_crypto_amount_from_database(user, basket, crypto)
+
+                if user_basket_crypto_amount:
+                    update_user_basket_crypto_amount_in_database(user_basket_crypto_amount, amount)
+                else:
+                    add_user_basket_crypto_amount_to_database(user, basket, crypto, amount)
 
         if num_failed_buys > 0:
             flash('Oh no! {} of your {} buys did not process, please retry in an hour. Error Code: {}'.format(num_failed_buys, num_buys, last_error), 'error')
         else:
             user_basket = get_user_basket_from_database(user, basket) # Get the user basket if it exists.
 
-            if user_basket: # If the user basket already exists ...
-                update_user_basket_in_database(user_basket, invest_amount) # update it.
-            else: # If the user basket does not exist ...
-                add_user_basket_to_database(user, basket, invest_amount) # add it.
+            if not user_basket: # If the user basket does not exists ...
+                add_user_basket_to_database(user, basket) # add it.
 
             flash('Your buys processed successfully! You should receive several emails from Coinbase.', 'success')
 
@@ -161,7 +171,7 @@ def sell_basket(user, basket_name):
                 num_failed_sells += 1
                 last_error = str(e)
 
-                add_failed_sell_to_database(user, crypto, sell_amount)
+                add_failed_sell_to_database(user, basket, crypto, sell_amount)
 
             else:
                 remove_user_basket_crypto_amount_from_database(user_basket_crypto_amount)
@@ -234,10 +244,9 @@ def get_crypto_percentages_from_database(basket):
     crypto_percentages = BasketCryptoPercentageModel.query.filter_by(basket_id = basket.id).all()
     return crypto_percentages
 
-def add_user_basket_to_database(user, basket, invest_amount):
+def add_user_basket_to_database(user, basket):
     new_user_basket = UserBasketModel(user_id = user.coinbase_id,
-                                      basket_id = basket.id,
-                                      invested_amount = invest_amount)
+                                      basket_id = basket.id)
     db.session.add(new_user_basket)
     db.session.commit()
 
@@ -245,23 +254,16 @@ def get_user_basket_from_database(user, basket):
     user_basket = UserBasketModel.query.filter_by(user_id = user.coinbase_id, basket_id = basket.id).first()
     return user_basket
 
-def update_user_basket_in_database(user_basket, invest_amount):
-    user_basket.invested_amount += invest_amount
-
-    db.session.add(user_basket)
-    db.session.commit()
-
 def remove_user_basket_from_database(user_basket):
     db.session.delete(user_basket)
     db.session.commit()
 
 def add_user_basket_crypto_amount_to_database(user, basket, crypto, amount):
-    user_basket_crypto_amount = UserBasketCryptoAmount(user_id = user.coinbase_id,
-                                                       basket_id = basket.id,
-                                                       crypto = crypto,
-                                                       amount = amount)
-
-    db.session.add()
+    user_basket_crypto_amount = UserBasketCryptoAmountModel(user_id = user.coinbase_id,
+                                                            basket_id = basket.id,
+                                                            crypto = crypto,
+                                                            amount = amount)
+    db.session.add(user_basket_crypto_amount)
     db.session.commit()
 
 def get_user_basket_crypto_amounts_from_database(user, basket):
@@ -272,17 +274,21 @@ def get_user_basket_crypto_amount_from_database(user, basket, crypto):
     user_basket_crypto_amount = UserBasketCryptoAmountModel.query.filter_by(user_id = user.coinbase_id, basket_id = basket.id, crypto = crypto).first()
     return user_basket_crypto_amount
 
+def update_user_basket_crypto_amount_in_database(user_basket_crypto_amount, amount):
+    user_basket_crypto_amount.amount += amount
+
+    db.session.add(user_basket_crypto_amount)
+    db.session.commit()
+
 def remove_user_basket_crypto_amount_from_database(user_basket_crypto_amount):
     db.session.delete(user_basket_crypto_amount)
     db.session.commit()
 
-def add_failed_buy_to_database(user, basket, basket_invest_amount, crypto, buy_amount):
+def add_failed_buy_to_database(user, basket, crypto, buy_amount):
     failed_buy = FailedBuyModel(user_id = user.coinbase_id,
                                 basket_id = basket.id,
-                                basket_invest_amount = basket_invest_amount,
                                 crypto = crypto,
                                 buy_amount = buy_amount)
-
     db.session.add(failed_buy)
     db.session.commit()
 
@@ -299,7 +305,6 @@ def add_failed_sell_to_database(user, basket, crypto, sell_amount):
                                   basket_id = basket.id,
                                   crypto = crypto,
                                   sell_amount = sell_amount)
-
     db.session.add(failed_sell)
     db.session.commit()
 

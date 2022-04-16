@@ -106,7 +106,6 @@ class User(object):
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         total: the total that will be spent (in the user's native currency)
-        return: the buy order, as a dict
         """
         retries = 0
 
@@ -114,11 +113,10 @@ class User(object):
             try:
                 account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
 
-                quote = self.client.buy(account_id, # Buys the specified cryptocurrency.
-                                        total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                                        currency = self.native_currency, # in the user's native currency.
-                                        payment_method = self.cash_payment_method_id, # Pays with the user's cash wallet.
-                                        quote = True)
+                self.client.buy(account_id, # Buys the specified cryptocurrency.
+                                total = total, # Buys the specified total (a portion of this total is used for fees) ...
+                                currency = crypto, # in the user's native currency.
+                                payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
                 raise RateLimitExceededError
@@ -131,10 +129,8 @@ class User(object):
                     transaction()
                 else: # If tried 3 times ...
                     raise Exception(e)
-            else:
-                return quote
 
-        return transaction() 
+        transaction() 
 
     def test_buy(self, crypto, total):
         """
@@ -178,7 +174,7 @@ class User(object):
         Sells cryptocurrency for the user. Deposits the earnings into the user's Cash wallet.
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
-        amount: the amount to sell (in the user's native currency)
+        amount: the amount to sell (in the selected cryptocurrency)
         """
         retries = 0
 
