@@ -11,7 +11,7 @@ from crypto_platform.dashboard import transact, taxlossharvest
 from crypto_platform.dashboard.User import User
 
 # For the Database
-from crypto_platform.models import UserModel, BasketModel, BasketCryptoPercentageModel, UserBasketModel, FailedBuyModel, FailedSellModel
+from crypto_platform.models import UserModel, BasketModel, BasketCryptoPercentageModel, UserBasketModel, UserBasketCryptoAmountModel, FailedBuyModel, FailedSellModel
 
 dashboard = Blueprint('dashboard', __name__, url_prefix='/dashboard', 
                       template_folder='templates',
@@ -22,7 +22,6 @@ def home():
     """Handles the callback to Coinbase and renders the Dashboard page."""
     try:
         user = create_user()
-
     except:
         return connect.coinbase_login()
     
@@ -32,9 +31,9 @@ def home():
     return render_template(
         'dashboard.html',
         cash_wallet_balance = user.get_cash_wallet_balance(),
+        user_basket_balances = get_user_basket_balances(user),
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
-        user_basket_names = get_user_basket_names(user),
         failed_buys_basket_names = failed_buys_basket_names,
         failed_sells_basket_names = failed_sells_basket_names,
         step_one_visibility = '',
@@ -59,9 +58,9 @@ def deposit():
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -78,9 +77,9 @@ def deposit():
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -105,9 +104,9 @@ def buybasket():
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -124,9 +123,9 @@ def buybasket():
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -150,9 +149,9 @@ def sellbasket():
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -160,10 +159,7 @@ def sellbasket():
         )
     else:
 
-        basket = transact.get_basket_from_database(selected_basket_name)
-        user_basket = transact.get_user_basket_from_database(user, basket)
-
-        transact.sell_basket(user, selected_basket_name, user_basket.invested_amount)
+        transact.sell_basket(user, selected_basket_name)
 
         failed_buys_basket_names = get_failed_buys_basket_names(user)
         failed_sells_basket_names = get_failed_sells_basket_names(user)
@@ -171,9 +167,9 @@ def sellbasket():
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -197,9 +193,9 @@ def withdraw():
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -216,9 +212,9 @@ def withdraw():
         return render_template(
             'dashboard.html',
             cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -237,6 +233,8 @@ def testscripts():
 
     return render_template(
         'dashboard.html',
+        cash_wallet_balance = user.get_cash_wallet_balance(),
+        user_basket_balances = get_user_basket_balances(user),
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
         step_one_visibility = '',
@@ -255,9 +253,10 @@ def taxlossharvestUI():
 
     return render_template(
         'dashboard.html',
+        cash_wallet_balance = user.get_cash_wallet_balance(),
+        user_basket_balances = get_user_basket_balances(user),
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
-        user_basket_names = get_user_basket_names(user),
         data = taxlossharvest.use_test_data(user),
         showTaxLossHarvestForm = "True",
         step_one_visibility = 'hidden',
@@ -275,9 +274,10 @@ def testharvest():
 
     return render_template(
         'dashboard.html',
+        cash_wallet_balance = user.get_cash_wallet_balance(),
+        user_basket_balances = get_user_basket_balances(user),
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
-        user_basket_names = get_user_basket_names(user),
         data=data,
         step_one_visibility = 'hidden',
         step_two_visibility = ''
@@ -298,9 +298,10 @@ def retrybuys():
 
         return render_template(
             'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -315,9 +316,10 @@ def retrybuys():
 
         return render_template(
             'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -339,9 +341,10 @@ def retrysells():
 
         return render_template(
             'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -356,9 +359,10 @@ def retrysells():
 
         return render_template(
             'dashboard.html',
+            cash_wallet_balance = user.get_cash_wallet_balance(),
+            user_basket_balances = get_user_basket_balances(user),
             native_currency = user.native_currency,
             basket_names = get_basket_names(),
-            user_basket_names = get_user_basket_names(user),
             failed_buys_basket_names = failed_buys_basket_names,
             failed_sells_basket_names = failed_sells_basket_names,
             step_one_visibility = '',
@@ -417,11 +421,6 @@ def get_basket_names():
 
     return basket_names
 
-def get_user_basket_names(user):
-    """Gets the names of the user's baskets."""
-    user_baskets = UserBasketModel.query.filter_by(user_id = user.coinbase_id).all()
-    return user_baskets
-
 def get_failed_buys_basket_names(user):
     """Gets the basket names of the user's failed buys."""
     failed_buys = FailedBuyModel.query.filter_by(user_id = user.coinbase_id).all()
@@ -457,3 +456,31 @@ def get_failed_sells_basket_names(user):
         return basket_names
     else:
         return None
+
+def get_user_basket_balances(user):
+    user_basket_balances = []
+
+    user_baskets = UserBasketModel.query.filter_by(user_id = user.coinbase_id).all()
+
+    for user_basket in user_baskets:
+        basket_id = user_basket.basket_id
+        basket_name = BasketModel.query.filter_by(id = basket_id).first().name
+        user_basket_crypto_amounts = UserBasketCryptoAmountModel.query.filter_by(user_id = user.coinbase_id, basket_id = basket_id).all()
+
+        basket_balance = 0
+
+        for user_basket_crypto_amount in user_basket_crypto_amounts:
+            crypto = user_basket_crypto_amount.crypto
+            amount = user_basket_crypto_amount.amount
+
+            sell_price = float(user.client.get_sell_price(currency_pair = crypto + '-' + user.native_currency).amount)
+            crypto_balance = amount * sell_price
+
+            basket_balance += round(crypto_balance, 2)
+
+        user_basket_balances.append([basket_name, basket_balance])
+
+    return user_basket_balances
+
+            
+

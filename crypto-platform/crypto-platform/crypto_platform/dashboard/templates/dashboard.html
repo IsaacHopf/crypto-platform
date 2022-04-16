@@ -127,6 +127,12 @@
                     <td>Cash Wallet</td>
                     <td>{{ cash_wallet_balance }}</td>
                 </tr>
+                {% for basket_name, basket_balance in user_basket_balances %}
+                <tr>
+                    <td>{{ basket_name }}</td>
+                    <td>{{ basket_balance }}</td>
+                </tr>
+                {% endfor %}
             </table>
         </section>
 
@@ -232,9 +238,9 @@
                         <h2>Sell Basket</h2>
 
                         <h3>Select the basket to sell:</h3>
-                        {% for user_basket_name in user_basket_names %}
-                        <input type="radio" name="basket-to-sell" id="{{ user_basket_name }}" value="{{ user_basket_name }}" required />
-                        <label for="{{ user_basket_name }}" style="display: inline;">{{ user_basket_name }}</label><br />
+                        {% for basket_name, _ in user_basket_balances %}
+                        <input type="radio" name="basket-to-sell" id="{{ basket_name }}" value="{{ basket_name }}" required />
+                        <label for="{{ basket_name }}" style="display: inline;">{{ basket_name }}</label><br />
                         {% endfor %}
 
                         <button type="submit" class="btn" style="margin-top: 20px;">Sell</button>

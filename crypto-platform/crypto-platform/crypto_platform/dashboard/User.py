@@ -106,6 +106,7 @@ class User(object):
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
         total: the total that will be spent (in the user's native currency)
+        return: the buy order, as a dict
         """
         retries = 0
 
@@ -113,10 +114,11 @@ class User(object):
             try:
                 account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
 
-                self.client.buy(account_id, # Buys the specified cryptocurrency.
-                                total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                                currency = self.native_currency, # in the user's native currency.
-                                payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
+                quote = self.client.buy(account_id, # Buys the specified cryptocurrency.
+                                        total = total, # Buys the specified total (a portion of this total is used for fees) ...
+                                        currency = self.native_currency, # in the user's native currency.
+                                        payment_method = self.cash_payment_method_id, # Pays with the user's cash wallet.
+                                        quote = True)
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
                 raise RateLimitExceededError
@@ -129,8 +131,10 @@ class User(object):
                     transaction()
                 else: # If tried 3 times ...
                     raise Exception(e)
+            else:
+                return quote
 
-        transaction() 
+        return transaction() 
 
     def test_buy(self, crypto, total):
         """
@@ -146,11 +150,11 @@ class User(object):
             try:
                 account_id = self.client.get_account(crypto)['id'] # Finds the account, or wallet, of the specified cryptocurrency
 
-                return self.client.buy(account_id, # Buys the specified cryptocurrency.
-                                       total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                                       currency = self.native_currency, # in the user's native currency.
-                                       commit = False, # Prevents the buy order from processing.
-                                       quote = True) # Generates the buy order (what it would look like had the buy been processed).
+                quote = self.client.buy(account_id, # Buys the specified cryptocurrency.
+                                        total = total, # Buys the specified total (a portion of this total is used for fees) ...
+                                        currency = self.native_currency, # in the user's native currency.
+                                        commit = False, # Prevents the buy order from processing.
+                                        quote = True) # Generates the buy order (what it would look like had the buy been processed).
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
                 raise RateLimitExceededError
@@ -164,7 +168,10 @@ class User(object):
                 else: # If tried 3 times ...
                     raise Exception(e)
 
-        transaction()  
+            else:
+                return quote
+
+        return transaction()  
 
     def sell(self, crypto, amount):
         """
@@ -181,7 +188,7 @@ class User(object):
 
                 self.client.sell(account_id, # Sells the specified cryptocurreny.
                                  amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
-                                 currency = self.native_currency, # in the user's native currency.
+                                 currency = crypto, # in the specified cryptocurrency.
                                  payment_method = self.cash_payment_method_id) # Deposits the funds into the user's Cash wallet.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...

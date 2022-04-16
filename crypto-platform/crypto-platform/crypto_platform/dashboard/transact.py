@@ -6,7 +6,7 @@ from crypto_platform.dashboard.User import User
 import time
 
 # For the Database
-from crypto_platform.models import BasketModel, BasketCryptoPercentageModel, UserBasketModel, FailedBuyModel, FailedSellModel
+from crypto_platform.models import BasketModel, BasketCryptoPercentageModel, UserBasketModel, UserBasketCryptoAmountModel, FailedBuyModel, FailedSellModel
 from crypto_platform import db
 
 """Transaction Functions"""
@@ -49,13 +49,17 @@ def buy_basket(user, basket_name, invest_amount):
             num_buys += 1
 
             try:
-                user.buy(crypto, buy_amount)
+                quote = user.buy(crypto, buy_amount)
 
             except Exception as e:
                 num_failed_buys += 1
                 last_error = str(e)
 
                 add_failed_buy_to_database(user, basket, invest_amount, crypto, buy_amount)
+
+            else:
+                amount = quote.amount.amount
+                add_user_basket_crypto_amount_to_database(user, basket, crypto, amount)
 
         if num_failed_buys > 0:
             flash('Oh no! {} of your {} buys did not process, please retry in an hour. Error Code: {}'.format(num_failed_buys, num_buys, last_error), 'error')
@@ -101,13 +105,17 @@ def retry_buy_basket(user, basket_name):
             num_buys += 1
 
             try:
-                user.buy(crypto, buy_amount)
+                quote = user.buy(crypto, buy_amount)
 
             except Exception as e:
                 num_failed_buys += 1
                 last_error = str(e)
+
             else:
                 remove_failed_buy_from_database(failed_buy)
+
+                amount = quote.amount.amount
+                add_user_basket_crypto_amount_to_database(user, basket, crypto, amount)
 
         if num_failed_buys > 0:
             flash('Oh no! {} of your {} buys did not process, please retry in an hour. Error Code: {}'.format(num_failed_buys, num_buys, last_error), 'error')
@@ -121,13 +129,12 @@ def retry_buy_basket(user, basket_name):
 
             flash('Your buys processed successfully! You should receive several emails from Coinbase.', 'success')
 
-def sell_basket(user, basket_name, invested_amount):
+def sell_basket(user, basket_name):
     """
     Sells a basket for the user.
 
     user: the user, represented as an object of the User class
     basket_name: the name of the user's selected basket
-    invested_amount: the amount to invest for the selected basket (in the user's native currency)
     """
     basket = get_basket_from_database(basket_name)
 
@@ -135,16 +142,15 @@ def sell_basket(user, basket_name, invested_amount):
         flash('Please retry your previous sells for ' + basket_name + ' before selling more.', 'error')
     else:
 
-        crypto_percentages = get_crypto_percentages_from_database(basket)
+        user_basket_crypto_amounts = get_user_basket_crypto_amounts_from_database(user, basket)
 
         num_sells = 0
         num_failed_sells = 0
         last_error = ''
 
-        for crypto_percentage in crypto_percentages:
-            crypto = crypto_percentage.crypto # The cryptocurrency.
-            percent = crypto_percentage.percentage # The percentage this cryptocurrency makes up in the basket.
-            sell_amount = invested_amount * percent # The amount of this cryptocurrency to sell.
+        for user_basket_crypto_amount in user_basket_crypto_amounts:
+            crypto = user_basket_crypto_amount.crypto # The cryptocurrency.
+            sell_amount = user_basket_crypto_amount.amount # The amount of this cryptocurrency to sell.
 
             num_sells += 1
         
@@ -156,6 +162,9 @@ def sell_basket(user, basket_name, invested_amount):
                 last_error = str(e)
 
                 add_failed_sell_to_database(user, crypto, sell_amount)
+
+            else:
+                remove_user_basket_crypto_amount_from_database(user_basket_crypto_amount)
 
         if num_failed_sells > 0:
             flash('Oh no! {} of your {} sells did not process, please retry in an hour. Error Code: {}'.format(num_failed_sells, num_sells, last_error), 'error')     
@@ -190,8 +199,12 @@ def retry_sell_basket(user, basket_name):
         except Exception as e:
             num_failed_sells += 1
             last_error = str(e)
+
         else:
             remove_failed_sell_from_database(failed_sell)
+
+            user_basket_crypto_amount = get_user_basket_crypto_amount_from_database(user, basket, crypto)
+            remove_user_basket_crypto_amount_from_database(user_basket_crypto_amount)
 
     if num_failed_sells > 0:
         flash('Oh no! {} of your {} sells did not process, please retry in an hour. Error Code: {}'.format(num_failed_sells, num_sells, last_error), 'error')     
@@ -240,6 +253,27 @@ def update_user_basket_in_database(user_basket, invest_amount):
 
 def remove_user_basket_from_database(user_basket):
     db.session.delete(user_basket)
+    db.session.commit()
+
+def add_user_basket_crypto_amount_to_database(user, basket, crypto, amount):
+    user_basket_crypto_amount = UserBasketCryptoAmount(user_id = user.coinbase_id,
+                                                       basket_id = basket.id,
+                                                       crypto = crypto,
+                                                       amount = amount)
+
+    db.session.add()
+    db.session.commit()
+
+def get_user_basket_crypto_amounts_from_database(user, basket):
+    user_basket_crypto_amount = UserBasketCryptoAmountModel.query.filter_by(user_id = user.coinbase_id, basket_id = basket.id).all()
+    return user_basket_crypto_amount
+
+def get_user_basket_crypto_amount_from_database(user, basket, crypto):
+    user_basket_crypto_amount = UserBasketCryptoAmountModel.query.filter_by(user_id = user.coinbase_id, basket_id = basket.id, crypto = crypto).first()
+    return user_basket_crypto_amount
+
+def remove_user_basket_crypto_amount_from_database(user_basket_crypto_amount):
+    db.session.delete(user_basket_crypto_amount)
     db.session.commit()
 
 def add_failed_buy_to_database(user, basket, basket_invest_amount, crypto, buy_amount):
