@@ -8,16 +8,18 @@
 
 /* Success Popup*/
 .success-popup {
-    background-color: mediumseagreen;
+    background-color: #DFF2BF;
     width: 100%;
-    padding: 1%;
+    padding: 0.5%;
+    padding-left: 2%;
+    padding-right: 2%;
     margin-bottom: 1%;
     border-radius: 8px;
     z-index: 1000002;
 }
 
     .success-popup h4 {
-        color: white;
+        color: #4F8A10;
         display: inline;
         text-align: left;
         font-size: 20px;
@@ -29,7 +31,7 @@
         padding: 0;
         padding-left: 2em;
         border-radius: 0;
-        background-color: mediumseagreen;
+        background-color: #DFF2BF;
         -webkit-transition: none;
         transition: none;
         color: none;
@@ -41,16 +43,18 @@
 
 /* Error Popup */
 .error-popup {
-    background-color: lightcoral;
+    background-color: #FFD2D2;
     width: 100%;
-    padding: 1%;
+    padding: 0.5%;
+    padding-left: 2%;
+    padding-right: 2%;
     margin-bottom: 1%;
     border-radius: 8px;
     z-index: 1000002;
 }
 
     .error-popup h4 {
-        color: white;
+        color: #D8000C;
         display: inline;
         text-align: left;
         font-size: 20px;
@@ -67,7 +71,7 @@
         padding: 0;
         padding-left: 2em;
         border-radius: 0;
-        background-color: lightcoral;
+        background-color: #FFD2D2;
         -webkit-transition: none;
         transition: none;
         color: none;
@@ -81,16 +85,19 @@
 .form-popup {
     display: none;
     position: fixed;
-    top: 10%;
-    left: 2%;
-    border: 3px solid #f1f1f1;
+    width: 40%;
+    height: 60%;
+    top: 15%;
+    left: 30%;
     z-index: 100001;
 }
 
 .form-container {
-    max-width: 300px;
-    padding: 10px;
-    background-color: white;
+    max-width: 100%;
+    padding: 20px;
+    background-color: #fafafa;
+    border-radius: 7.5px;
+    border: 3px solid #e1e1e1
 }
 
     .form-container input[type=number] {

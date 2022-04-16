@@ -22,7 +22,6 @@
 
 <body class="body" onload="openWebForms()">
 
-
     <script>
         function openWebForms() {
             if ("{{ showTaxLossHarvestForm }}" == "True") {
@@ -41,7 +40,6 @@
             <a href="#sell" class="nav-link w-nav-link">sell</a>
             <a href="#taxlossharvest" class="nav-link w-nav-link">tax-loss harvest</a>
             <a href="#accountsettings" class="nav-link w-nav-link">account settings</a>
-            <a href="#contactus" class="nav-link w-nav-link">contact us</a>
         </nav>
         <div class="hamburger-button w-nav-button" style="-webkit-user-select: text;" aria-label="menu" role="button" tabindex="0" aria-controls="w-nav-overlay-0" aria-haspopup="menu" aria-expanded="false">
             <div class="w-icon-nav-menu"></div>
@@ -120,7 +118,7 @@
         </div>
 
         <!--Dashboard-->
-        <section id="dashboard" class="section wf-section">
+        <section id="dashboard" class="section wf-section" style="height: 97.5%; padding-right: 10rem; padding-left: 10rem;">
             <div class="w-container">
                 <div class="section-title-group">
                     <h2 class="section-heading centered">dashboard</h2>
@@ -167,23 +165,23 @@
                 </div>
 
                 <div class="w-row">
-                    <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-12-black.svg" width="100" alt="" class="grid-image">
-                        <h3>Basket 1</h3>
-                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
+                    <div class="column-0-padding w-col w-col-3" style="border-left: 3px solid #cccccc; ">
+                        <img src="" width="100" alt="" class="grid-image">
+                        <h3>Test Basket</h3>
+                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br><br>Basket for testing.</p>
                     </div>
-                    <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-05-black.svg" width="100" alt="" class="grid-image">
-                        <h3>Basket 2</h3>
-                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
+                    <div class="column-0-padding w-col w-col-3" style="border-left: 3px solid #cccccc; ">
+                        <img src="" width="100" alt="" class="grid-image">
+                        <h3>Test Basket 2</h3>
+                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ada.<br><br>Another basket for testing.</p>
                     </div>
-                    <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-24-black.svg" width="100" alt="" class="grid-image">
-                        <h3>basket 3</h3>
-                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
+                    <div class="column-0-padding w-col w-col-3" style="border-left: 3px solid #cccccc; ">
+                        <img src="" width="100" alt="" class="grid-image">
+                        <h3>Test Basket 3</h3>
+                        <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Litecoin<br>Ada.<br><br>Yet another basket for testing.</p>
                     </div>
-                    <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-66-black.svg" width="100" alt="" class="grid-image">
+                    <div class="column-0-padding w-col w-col-3" style="border-left: 3px solid #cccccc; ">
+                        <img src="" width="100" alt="" class="grid-image">
                         <h3>basket 4</h3>
                         <p>Comprised of the following:<br><br>Bitcoin<br>Ethereum<br>Ethereum Classic.<br><br>This is our best performing basket.</p>
                     </div>
@@ -273,9 +271,8 @@
         </div>
 
         <!--Tax-Loss Harvest Section-->
-        <section id="taxlossharvest" class="section section-gray wf-section">
+        <section id="taxlossharvest" class="section wf-section">
             <div class="w-container">
-
 
                 <div class="section-title-group">
                     <h2 class="section-heading centered">Tax-Loss Harvest</h2>
@@ -313,82 +310,50 @@
                         <button type="button" class="btn cancel" onclick="closeTaxLossHarvestForm()">Close</button>
                     </form>
                 </div>
-
-
-
             </div>
         </section>
 
-
-
-
-
-
-
-        <!--Investing/Basket Selection Div-->
-        <div>
-            <h1>Investments</h1>
-            <button class="btn-primary" onclick="openSelectBasketForm()">Invest</button>
-
-            <div class="form-popup" id="selectBasketForm">
-                <form action="{{ url_for('dashboard.buybasket') }}" method="POST" class="form-container">
-                    <h2>Invest</h2>
-                    <h3>Basket</h3>
-                    {% for basket in baskets %}
-                    <input type="radio" name="baskets" id="{{ basket }}" value="{{ basket }}" required />
-                    <label for="{{ basket }}">{{ basket }}</label><br />
-                    {% endfor %}
-
-                    <h3>Invest Amount (in {{ native_currency }})</h3>
-                    <input type="number" min="1" step="any" name="invest-amount" style="display: block; margin-bottom: 3rem;" required />
-
-                    <button type="submit" class="btn">Invest</button>
-                    <button type="button" class="btn cancel" onclick="closeSelectBasketForm()">Close</button>
-                </form>
+        <section class="call-to-action-section wf-section">
+            <div class="container w-container">
+                <div class="w-row">
+                    <div class="w-col w-col-8">
+                        <h3 class="call-to-action-heading">View your Dashboard!</h3>
+                    </div>
+                    <div class="align-right w-col w-col-4">
+                        <a href="#dashboard" class="hollow-button white">Dashboard</a>
+                    </div>
+                </div>
             </div>
-
-        </div>
-
-        <!--Withdraw Div-->
-        <div>
-            <p><a href="{{ url_for('dashboard.withdraw') }}" class="btn btn-primary">Withdraw</a></p>
-        </div>
-
-
-
-
-
-
-
+        </section>
 
         <!--Account Settings-->
-        <div id="accountsettings" class="section-2 wf-section">
+        <div id="accountsettings" class="section section-gray wf-section">
             <div class="w-container">
                 <div class="section-title-group">
                     <h2 class="section-heading centered">account settings</h2>
                 </div>
                 <div class="w-row">
                     <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-12-black.svg" width="100" alt="" class="grid-image">
+                        <img src="" width="100" alt="" class="grid-image">
                         <h3 class="heading">change password</h3>
                         <p>Please click the link below to update your password on Coinbase.</p>
                         <a href="https://www.coinbase.com/settings/security_settings" class="link" target="_blank">Change Password</a>
                     </div>
                     <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-05-black.svg" width="100" alt="" class="grid-image">
+                        <img src="" width="100" alt="" class="grid-image">
                         <h3>link accounts</h3>
                         <p>Please click the links below to link the appropriate accounts if not done so already.</p>
-                        <a href="https://www.coinbase.com/dashboard" class="link" target="_blank">Link Coinbase</a>
                         <a href="https://www.coinbase.com/settings/linked-accounts" class="link" target="_blank">Link Bank Account</a>
+                        <a href="https://accounts.coinbase.com/profile" class="link" target="_blank">Link Email Address</a>
                     </div>
                     <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-24-black.svg" width="100" alt="" class="grid-image">
+                        <img src="" width="100" alt="" class="grid-image">
                         <h3>Contact us</h3>
                         <p>Have a suggestion or complaint you&#x27;d like for us to hear? Please contact us below!</p>
-                        <a href="#contactus" class="link">Contact</a>
+                        <a href="{{ url_for('site.home') }}#contactus" class="link">Contact</a>
                     </div>
                     <div class="column-0-padding w-col w-col-3">
-                        <img src="images/feather-66-black.svg" width="100" alt="" class="grid-image">
+                        <img src="" width="100" alt="" class="grid-image">
                         <h3>View dashboard</h3>
                         <p>View dashboard of investments.</p>
                         <a href="#dashboard" class="link">View Dashboard</a>
@@ -396,30 +361,6 @@
                 </div>
             </div>
         </div>
-
-        <!--Contact Us-->
-        <section id="contactus" class="section section-gray wf-section">
-            <div class="w-container">
-                <div class="section-title-group">
-                    <h2 class="section-heading centered">Contact Form</h2>
-                    <div class="section-subheading center">Need to submit a concern or suggestion for the platform?</div>
-                </div>
-                <div class="form-wrapper squeezed w-form">
-                    <form id="email-form" name="email-form" data-name="Email Form" method="get">
-                        <div class="w-row">
-                            <div class="column-remove-padding w-col w-col-6"><input type="text" class="form-field w-input" maxlength="256" name="name-7" data-name="Name 7" placeholder="Name" id="name-7"></div>
-                            <div class="column-remove-padding w-col w-col-6"><input type="email" class="form-field w-input" maxlength="256" name="email-9" data-name="Email 9" placeholder="Email" id="email-9" required=""></div>
-                        </div><textarea id="field-4" name="field-4" placeholder="Contact us for any platform issues, concerns, suggestions, etc." maxlength="5000" data-name="Field 4" class="form-field text-area w-input"></textarea><input type="submit" value="Send Message" data-wait="Please wait..." class="button full-width w-button">
-                    </form>
-                    <div class="success-message w-form-done">
-                        <p class="paragraph-form">Thank you! Your submission has been received!</p>
-                    </div>
-                    <div class="success-message w-form-fail">
-                        <p class="paragraph-form">Oops! Something went wrong while submitting the form :(</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <footer class="footer center wf-section">
             <div class="w-container">
