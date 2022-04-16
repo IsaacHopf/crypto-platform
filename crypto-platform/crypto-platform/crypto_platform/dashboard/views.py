@@ -37,6 +37,7 @@ def home():
         user_basket_names = get_user_basket_names(user),
         failed_buys_basket_names = failed_buys_basket_names,
         failed_sells_basket_names = failed_sells_basket_names,
+        showTaxLossHarvestForm = "False",
         step_one_visibility = '',
         step_two_visibility = 'hidden'
     )
@@ -243,7 +244,7 @@ def testscripts():
         step_two_visibility = 'hidden'
     )
 
-@dashboard.route('/taxlossharvestUI', methods=['GET', 'POST'])
+@dashboard.route('/taxlossharvestUI', methods=['POST'])
 def taxlossharvestUI():
     try:
         user = create_user()
@@ -257,7 +258,7 @@ def taxlossharvestUI():
         'dashboard.html',
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
-        user_basket_names = get_user_basket_names(user)
+        user_basket_names = get_user_basket_names(user),
         data = taxlossharvest.use_test_data(user),
         showTaxLossHarvestForm = "True",
         step_one_visibility = 'hidden',

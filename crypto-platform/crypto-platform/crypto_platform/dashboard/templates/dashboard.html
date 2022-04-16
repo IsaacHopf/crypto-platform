@@ -21,6 +21,16 @@
 </head>
 
 <body class="body" onload="openWebForms()">
+
+
+    <script>
+        function openWebForms() {
+            if ("{{ showTaxLossHarvestForm }}" == "True") {
+                openTaxLossHarvestForm();
+            }
+        }
+    </script>
+
     <div data-collapse="medium" data-animation="default" data-duration="400" data-no-scroll="1" data-easing="ease" data-easing2="ease" role="banner" class="left-navigation w-nav">
         <a href="#" class="logo-link w-nav-brand">
             <h1 class="brand-text">CryptoPlatform</h1>
@@ -271,7 +281,7 @@
 
                 <!--Tax loss harvest form-->
                 <div class="form-popup" id="taxLossHarvestForm">
-                    <form action="{{ url_for('dashboard.taxlossharvestUI') }}" method="GET" class="form-container">
+                    <form action="{{ url_for('dashboard.taxlossharvestUI') }}" method="POST" class="form-container">
                         <h2>Tax Loss Harvest</h2>
 
                         <table class="table">
