@@ -169,12 +169,12 @@ class User(object):
 
         return transaction()  
 
-    def sell(self, crypto, total):
+    def sell(self, crypto, amount):
         """
         Sells cryptocurrency for the user. Deposits the earnings into the user's Cash wallet.
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
-        total: the amount to sell (in the user's native currency)
+        amount: the amount to sell (in the user's native currency)
         """
         retries = 0
 
@@ -183,7 +183,7 @@ class User(object):
                 account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
 
                 self.client.sell(account_id, # Sells the specified cryptocurreny.
-                                 total = total, # Sells the specified amount (a portion of this total is used for fees) ...
+                                 amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
                                  currency = self.native_currency, # in the user's native currency.
                                  payment_method = self.cash_payment_method_id) # Deposits the funds into the user's Cash wallet.
 

@@ -23,6 +23,7 @@ def home():
     """Handles the callback to Coinbase and renders the Dashboard page."""
     try:
         user = create_user()
+        transact.sell_basket(user, "Test Basket")
     except:
         return connect.coinbase_login()
     
