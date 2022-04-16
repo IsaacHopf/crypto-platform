@@ -1,3 +1,5 @@
+
+
 //Form Popups
 function openDepositForm() {
     document.getElementById("depositForm").style.display = "block";
@@ -73,8 +75,3 @@ function closeFailedSellErrorPopup() {
 }
 
 //Open web forms on page load
-function openWebForms() {
-    if ("{{ showTaxLossHarvestForm }}" == "True") {
-        openTaxLossHarvestForm();
-    }
-}
