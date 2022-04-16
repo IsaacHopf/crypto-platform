@@ -115,7 +115,7 @@ class User(object):
 
                 self.client.buy(account_id, # Buys the specified cryptocurrency.
                                 total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                                currency = crypto, # in the user's native currency.
+                                currency = self.native_currency, # in the user's native currency.
                                 payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
@@ -169,12 +169,12 @@ class User(object):
 
         return transaction()  
 
-    def sell(self, crypto, amount):
+    def sell(self, crypto, total):
         """
         Sells cryptocurrency for the user. Deposits the earnings into the user's Cash wallet.
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
-        amount: the amount to sell (in the selected cryptocurrency)
+        total: the amount to sell (in the user's native currency)
         """
         retries = 0
 
@@ -183,8 +183,8 @@ class User(object):
                 account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
 
                 self.client.sell(account_id, # Sells the specified cryptocurreny.
-                                 amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
-                                 currency = crypto, # in the specified cryptocurrency.
+                                 total = total, # Sells the specified amount (a portion of this total is used for fees) ...
+                                 currency = self.native_currency, # in the user's native currency.
                                  payment_method = self.cash_payment_method_id) # Deposits the funds into the user's Cash wallet.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
@@ -239,6 +239,16 @@ class User(object):
         return: the balance, as a float
         """
         balance = float(self.client.get_account(self.native_currency)['balance']['amount'])
+        return balance
+
+    def get_crypto_wallet_balance(self, crypto):
+        """
+        Gets the balance of the user's specified crypto wallet.
+
+        crypto: the cryptocurrency symbol (Ex. 'BTC')
+        return: the balance, as a float
+        """
+        balance = float(self.client.get_account(crypto)['native_balance']['amount'])
         return balance
 
     def __add_user_to_database(self):
