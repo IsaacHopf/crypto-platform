@@ -3,7 +3,7 @@ Scripts for transactions (deposit, buy, sell, withdraw).
 """
 from flask import flash
 from crypto_platform.dashboard.User import User
-import time
+import time, re
 
 # For the Database
 from crypto_platform.models import BasketModel, BasketCryptoPercentageModel, UserBasketModel, UserBasketCryptoAmountModel, FailedBuyModel, FailedSellModel
@@ -240,7 +240,10 @@ def withdraw(user, amount):
         try:
             user.withdraw(amount)
         except Exception as e:
-            flash('Oh no! Your withdraw did not process, please try again in an hour. Error Code: ' + str(e), 'error')
+            if re.search("withdrawal_limit_exceeded", str(e)):
+                flash('Oh no! Your withdraw did not process. Please wait for your transactions to process. This could take up to a week. Error Code: ' + str(e), 'error')
+            else:
+                flash('Oh no! Your withdraw did not process, please try again in an hour. Error Code: ' + str(e), 'error')
         else:
             flash('Your withdraw processed successfully! You should receive an email from Coinbase.', 'success')
 
