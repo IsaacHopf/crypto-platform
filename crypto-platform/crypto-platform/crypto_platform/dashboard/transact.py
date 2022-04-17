@@ -49,7 +49,7 @@ def buy_basket(user, basket_name, invest_amount):
             num_buys += 1
 
             try:
-                user.buy(crypto, buy_amount)
+                buy = user.buy(crypto, buy_amount)
 
             except Exception as e:
                 num_failed_buys += 1
@@ -58,17 +58,17 @@ def buy_basket(user, basket_name, invest_amount):
                 add_failed_buy_to_database(user, basket, crypto, buy_amount)
 
             else:
+                bought_amount = buy['amount']['amount']
                 user_basket_crypto_amount = get_user_basket_crypto_amount_from_database(user, basket, crypto)
 
                 if user_basket_crypto_amount:
-                    update_user_basket_crypto_amount_in_database(user_basket_crypto_amount, buy_amount)
+                    update_user_basket_crypto_amount_in_database(user_basket_crypto_amount, bought_amount)
                 else:
-                    add_user_basket_crypto_amount_to_database(user, basket, crypto, buy_amount)
+                    add_user_basket_crypto_amount_to_database(user, basket, crypto, bought_amount)
 
         if num_failed_buys > 0:
             flash('Oh no! {} of your {} buys did not process, please retry in an hour. Error Code: {}'.format(num_failed_buys, num_buys, last_error), 'error')
         else:
-
             user_basket = get_user_basket_from_database(user, basket) # Get the user basket if it exists.
 
             if not user_basket: # If the user basket does not exists ...
@@ -105,7 +105,7 @@ def retry_buy_basket(user, basket_name):
             num_buys += 1
 
             try:
-                user.buy(crypto, buy_amount)
+                buy = user.buy(crypto, buy_amount)
 
             except Exception as e:
                 num_failed_buys += 1
@@ -114,12 +114,13 @@ def retry_buy_basket(user, basket_name):
             else:
                 remove_failed_buy_from_database(failed_buy)
 
+                bought_amount = buy['amount']['amount']
                 user_basket_crypto_amount = get_user_basket_crypto_amount_from_database(user, basket, crypto)
 
                 if user_basket_crypto_amount:
-                    update_user_basket_crypto_amount_in_database(user_basket_crypto_amount, buy_amount)
+                    update_user_basket_crypto_amount_in_database(user_basket_crypto_amount, bought_amount)
                 else:
-                    add_user_basket_crypto_amount_to_database(user, basket, crypto, buy_amount)
+                    add_user_basket_crypto_amount_to_database(user, basket, crypto, bought_amount)
 
         if num_failed_buys > 0:
             flash('Oh no! {} of your {} buys did not process, please retry in an hour. Error Code: {}'.format(num_failed_buys, num_buys, last_error), 'error')
@@ -210,8 +211,6 @@ def retry_sell_basket(user, basket_name):
 
         current_balance = user.get_crypto_wallet_balance(crypto) # Get the current balance of the specified cryptocurrency wallet.
         sell_amount = (bought_amount / total_bought_amount) * current_balance # Calculate the amount to sell.
-        sell_amount -= 2
-        print(sell_amount)
 
         num_sells += 1
 

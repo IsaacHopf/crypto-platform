@@ -10,7 +10,8 @@
 .success-popup {
     background-color: #DFF2BF;
     width: 100%;
-    padding: 0.5%;
+    padding-top: 0.25%;
+    padding-bottom: 1%;
     padding-left: 2%;
     padding-right: 2%;
     margin-bottom: 1%;
@@ -26,26 +27,24 @@
         margin-right: 1rem;
     }
 
-    .success-popup button {
-        display: inline-block;
+    .success-popup .popup-clear-btn {
+        display: block;
+        margin-left: 98%;
+        margin-right: 2%;
         padding: 0;
-        padding-left: 2em;
-        border-radius: 0;
+        height: 10px;
+        font-size: 12px;
+        color: #4F8A10;
         background-color: #DFF2BF;
-        -webkit-transition: none;
-        transition: none;
-        color: none;
-        font-size: 16px;
-        line-height: 21px;
-        text-align: right;
-        text-decoration: none;
     }
+
 
 /* Error Popup */
 .error-popup {
     background-color: #FFD2D2;
     width: 100%;
-    padding: 0.5%;
+    padding-top: 0.25%;
+    padding-bottom: 1%;
     padding-left: 2%;
     padding-right: 2%;
     margin-bottom: 1%;
@@ -67,18 +66,31 @@
     }
 
     .error-popup button {
-        display: inline-block;
         padding: 0;
-        padding-left: 2em;
+        padding-left: 1rem;
         border-radius: 0;
         background-color: #FFD2D2;
         -webkit-transition: none;
         transition: none;
         color: none;
-        font-size: 16px;
         line-height: 21px;
-        text-align: right;
         text-decoration: none;
+        color: #D8000C;
+        display: inline;
+        text-align: left;
+        font-size: 18px;
+        margin-right: 1rem;
+    }
+
+    .error-popup .popup-clear-btn {
+        display: block;
+        margin-left: 98%;
+        margin-right: 2%;
+        padding: 0;
+        height: 10px;
+        font-size: 12px;
+        color: #D8000C;
+        background-color: #FFD2D2;
     }
 
 /* Form Popup */

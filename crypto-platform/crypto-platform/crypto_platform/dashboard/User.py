@@ -113,10 +113,10 @@ class User(object):
             try:
                 account_id = self.client.get_account(crypto)['id'] # Finds the wallet of the specified cryptocurrency.
 
-                self.client.buy(account_id, # Buys the specified cryptocurrency.
-                                total = total, # Buys the specified total (a portion of this total is used for fees) ...
-                                currency = self.native_currency, # in the user's native currency.
-                                payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
+                buy = self.client.buy(account_id, # Buys the specified cryptocurrency.
+                                      total = total, # Buys the specified total (a portion of this total is used for fees) ...
+                                      currency = self.native_currency, # in the user's native currency.
+                                      payment_method = self.cash_payment_method_id) # Pays with the user's cash wallet.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
                 raise RateLimitExceededError
@@ -129,8 +129,10 @@ class User(object):
                     transaction()
                 else: # If tried 3 times ...
                     raise Exception(e)
+            else:
+                return buy
 
-        transaction() 
+        return transaction() 
 
     def test_buy(self, crypto, total):
         """
@@ -174,7 +176,7 @@ class User(object):
         Sells cryptocurrency for the user. Deposits the earnings into the user's Cash wallet.
 
         crypto: the cryptocurrency symbol (Ex. 'BTC' for Bitcoin)
-        amount: the amount to sell (in the user's native currency)
+        amount: the amount to sell (in the specified cryptocurrency)
         """
         retries = 0
 
@@ -184,7 +186,7 @@ class User(object):
 
                 self.client.sell(account_id, # Sells the specified cryptocurreny.
                                  amount = amount, # Sells the specified amount (a portion of this amount is used for fees) ...
-                                 currency = self.native_currency, # in the user's native currency.
+                                 currency = crypto, # in the specified cryptocurrency.
                                  payment_method = self.cash_payment_method_id) # Deposits the funds into the user's Cash wallet.
 
             except RateLimitExceededError: # If the rate limit was exceeded ...
@@ -248,7 +250,7 @@ class User(object):
         crypto: the cryptocurrency symbol (Ex. 'BTC')
         return: the balance, as a float
         """
-        balance = float(self.client.get_account(crypto)['native_balance']['amount'])
+        balance = float(self.client.get_account(crypto)['balance']['amount'])
         return balance
 
     def __add_user_to_database(self):
