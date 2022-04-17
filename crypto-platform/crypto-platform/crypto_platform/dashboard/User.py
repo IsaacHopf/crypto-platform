@@ -243,7 +243,7 @@ class User(object):
         balance = float(self.client.get_account(self.native_currency)['balance']['amount'])
         return balance
 
-    def get_crypto_wallet_balance(self, crypto):
+    def get_crypto_wallet_balance_in_cryptocurrency(self, crypto):
         """
         Gets the balance of the user's specified crypto wallet.
 
@@ -251,6 +251,16 @@ class User(object):
         return: the balance, as a float
         """
         balance = float(self.client.get_account(crypto)['balance']['amount'])
+        return balance
+
+    def get_crypto_wallet_balance_in_native_currency(self, crypto):
+        """
+        Gets the balance of the user's specified crypto wallet.
+
+        crypto: the cryptocurrency symbol (Ex. 'BTC')
+        return: the balance, as a float
+        """
+        balance = float(self.client.get_account(crypto)['native_balance']['amount'])
         return balance
 
     def __add_user_to_database(self):

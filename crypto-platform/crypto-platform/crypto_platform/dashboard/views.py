@@ -492,12 +492,12 @@ def get_user_basket_balances(user):
             for user_crypto_amount in user_crypto_amounts: # For all of the user's user_basket_crypto_amounts with the same cryptocurrency ...
                 total_bought_amount += user_crypto_amount.amount # add their originally bought amounts to the total amount.
 
-            current_balance = user.get_crypto_wallet_balance(crypto) # Get the current balance of the specified cryptocurrency wallet.
+            current_balance = user.get_crypto_wallet_balance_in_native_currency(crypto) # Get the current balance of the specified cryptocurrency wallet.
             crypto_balance = (bought_amount / total_bought_amount) * current_balance # Calculate the current balance of for this crypto in this basket.
 
-            basket_balance += round(crypto_balance, 2)
+            basket_balance += crypto_balance
 
-        user_basket_balances.append([basket_name, basket_balance])
+        user_basket_balances.append([basket_name, round(basket_balance, 2)])
 
     return user_basket_balances
 

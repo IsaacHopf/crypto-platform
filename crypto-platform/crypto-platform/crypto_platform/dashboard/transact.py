@@ -160,7 +160,7 @@ def sell_basket(user, basket_name):
             for user_crypto_amount in user_crypto_amounts: # For all of the user's user_basket_crypto_amounts with the same cryptocurrency ...
                 total_bought_amount += user_crypto_amount.amount # add their originally bought amounts to the total amount.
 
-            current_balance = user.get_crypto_wallet_balance(crypto) # Get the current balance of the specified cryptocurrency wallet.
+            current_balance = user.get_crypto_wallet_balance_in_cryptocurrency(crypto) # Get the current balance of the specified cryptocurrency wallet.
             sell_amount = (bought_amount / total_bought_amount) * current_balance # Calculate the amount to sell.
 
             num_sells += 1
@@ -209,7 +209,7 @@ def retry_sell_basket(user, basket_name):
         for user_crypto_amount in user_crypto_amounts: # For all of the user's user_basket_crypto_amounts with the same cryptocurrency ...
             total_bought_amount += user_crypto_amount.amount # add their originally bought amounts to the total amount.
 
-        current_balance = user.get_crypto_wallet_balance(crypto) # Get the current balance of the specified cryptocurrency wallet.
+        current_balance = user.get_crypto_wallet_balance_in_cryptocurrency(crypto) # Get the current balance of the specified cryptocurrency wallet.
         sell_amount = (bought_amount / total_bought_amount) * current_balance # Calculate the amount to sell.
 
         num_sells += 1
