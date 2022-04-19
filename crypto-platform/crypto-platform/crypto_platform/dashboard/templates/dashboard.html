@@ -24,10 +24,13 @@
 
     <script>
         function openWebForms() {
-            if ("{{ showTaxLossHarvestForm }}" == "True") {
-                openTaxLossHarvestForm();
+            if ("{{ showTaxLossHarvestConfirmForm }}" == "True") {
+                openTaxLossHarvestConfirmForm();
             }
+
         }
+
+
     </script>
 
     <div data-collapse="medium" data-animation="default" data-duration="400" data-no-scroll="1" data-easing="ease" data-easing2="ease" role="banner" class="left-navigation w-nav">
@@ -280,13 +283,27 @@
                     <div class="section-subheading center">Check for tax-loss harvest potential and confirm to tax-loss harvest.</div>
                 </div>
 
-                <button onclick="openTaxLossHarvestForm()" data-w-id="c10ff72c-a249-5d39-9e24-ee1059ebae88" style="background-color:rgb(68,114,196)" class="button-2 w-button">Check For Tax Loss Harvesting Potential</button>
+                <button onclick="openTaxLossHarvestCheckForm()" data-w-id="c10ff72c-a249-5d39-9e24-ee1059ebae88" style="background-color:rgb(68,114,196)" class="button-2 w-button">Check For Tax Loss Harvesting Potential</button>
 
                 <!--Tax loss harvest form-->
-                <div class="form-popup" id="taxLossHarvestForm">
-                    <form action="{{ url_for('dashboard.taxlossharvestUI') }}" method="POST" class="form-container">
+                <div class="form-popup" id="taxLossHarvestCheckForm">
+                    <form action="{{ url_for('dashboard.taxlossharvestconfirm') }}" method="POST" class="form-container">
                         <h2>Tax Loss Harvest</h2>
 
+                        <p></p>
+                        <p>Click the button below the check for your potential tax loss harvest.</p>
+                        <p></p>
+
+                        <button type="submit" class="btn">Check</button>
+                        <button type="button" class="btn cancel" onclick="closeTaxLossHarvestCheckForm()">Close</button>
+                    </form>
+                </div>
+
+                <div class="form-popup" id="taxLossHarvestConfirmForm">
+                    <form action="{{ url_for('dashboard.taxlossharvestprocess') }}" method="POST" class="form-container">
+                        <h2>Tax Loss Harvest</h2>
+                        <p></p>
+                        <p>You should make the following trades to capture your realized losses.</p>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -306,9 +323,10 @@
                                 {% endfor %}
                             </tbody>
                         </table>
-
-                        <button type="submit" class="btn">Check</button>
-                        <button type="button" class="btn cancel" onclick="closeTaxLossHarvestForm()">Close</button>
+                        <p></p>
+                        <p>Would you like to proceed with these transactions?</p>
+                        <button type="submit" class="btn">Yes</button>
+                        <button type="button" class="btn cancel" onclick="closeTaxLossHarvestConfirmForm()">No</button>
                     </form>
                 </div>
             </div>

@@ -98,15 +98,15 @@ def predict_loss(all_crypto_prices, user): # This is the function that we would 
     print ("These are the days with potential to harvest:")
     print (potential_harvest_dates)
 
-def perform_harvest_sells(user, trades, all_crypto_prices):
+def perform_harvest_sells(user, trades):
 
     for trade in trades:
         crypto_to_sell = trade[0]
         amount_of_crypto_to_sell = trade[1]
-        price = get_one_price(crypto_to_sell, all_crypto_prices)
-        USD_amount_of_crypto_to_sell = price * amount_of_crypto_to_sell
-        user.sell(crypto_to_sell, USD_amount_of_crypto_to_sell)
-        trade.append(USD_amount_of_crypto_to_sell)
+        #price = get_one_price(crypto_to_sell, all_crypto_prices)
+        #USD_amount_of_crypto_to_sell = price * amount_of_crypto_to_sell
+        user.sell(crypto_to_sell, amount_of_crypto_to_sell)
+        #trade.append(USD_amount_of_crypto_to_sell)
 
     return trades
 
@@ -115,7 +115,8 @@ def perform_harvest_buys(user, trades):
     for trade in trades:
         crypto_to_buy = trade[2]
         USD_amount_of_crypto_to_buy = trade[3]
-        user.buy(crypto_to_buy, USD_amount_of_crypto_to_buy)
+        if user.get_cash_wallet_balance() > USD_amount_of_crypto_to_buy:
+            user.buy(crypto_to_buy, USD_amount_of_crypto_to_buy)
 
 def harvest(user, all_crypto_prices):
     

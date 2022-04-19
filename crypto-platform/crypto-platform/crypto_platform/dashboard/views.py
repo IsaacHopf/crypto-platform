@@ -230,27 +230,27 @@ def withdraw():
         )
 
 
-@dashboard.route('/testscripts')
-def testscripts():
-    try:
-        user = create_user()
-    except:
-        return connect.coinbase_login()
+#@dashboard.route('/testscripts')
+#def testscripts():
+#    try:
+#        user = create_user()
+#    except:
+#        return connect.coinbase_login()
 
-    taxlossharvest.process_investments(user)
+#    taxlossharvest.process_investments(user)
 
-    return render_template(
-        'dashboard.html',
-        cash_wallet_balance = user.get_cash_wallet_balance(),
-        user_basket_balances = get_user_basket_balances(user),
-        native_currency = user.native_currency,
-        basket_names = get_basket_names(),
-        step_one_visibility = '',
-        step_two_visibility = 'hidden'
-    )
+#    return render_template(
+#        'dashboard.html',
+#        cash_wallet_balance = user.get_cash_wallet_balance(),
+#        user_basket_balances = get_user_basket_balances(user),
+#        native_currency = user.native_currency,
+#        basket_names = get_basket_names(),
+#        step_one_visibility = '',
+#        step_two_visibility = 'hidden'
+#    )
 
-@dashboard.route('/taxlossharvestUI', methods=['POST'])
-def taxlossharvestUI():
+@dashboard.route('/taxlossharvestcheck', methods=['POST'])
+def taxlossharvestcheck():
     try:
         user = create_user()
     except:
@@ -266,7 +266,49 @@ def taxlossharvestUI():
         native_currency = user.native_currency,
         basket_names = get_basket_names(),
         data = taxlossharvest.use_test_data(user),
-        showTaxLossHarvestForm = "True",
+        step_one_visibility = 'hidden',
+        step_two_visibility = ''
+    )
+
+@dashboard.route('/taxlossharvestconfirm', methods=['POST'])
+def taxlossharvestconfirm():
+    try:
+        user = create_user()
+    except:
+        return connect.coinbase_login()
+
+
+    #data = taxlossharvest.process_investments(user)
+
+    return render_template(
+        'dashboard.html',
+        cash_wallet_balance = user.get_cash_wallet_balance(),
+        user_basket_balances = get_user_basket_balances(user),
+        native_currency = user.native_currency,
+        basket_names = get_basket_names(),
+        data = taxlossharvest.use_test_data(user),
+        showTaxLossHarvestConfirmForm = "True",
+        step_one_visibility = 'hidden',
+        step_two_visibility = ''
+    )
+
+@dashboard.route('/taxlossharvestprocess', methods=['POST'])
+def taxlossharvestprocess():
+    try:
+        user = create_user()
+    except:
+        return connect.coinbase_login()
+
+
+    #taxlossharvest.perform_harvest_sells(user,data)
+
+    return render_template(
+        'dashboard.html',
+        cash_wallet_balance = user.get_cash_wallet_balance(),
+        user_basket_balances = get_user_basket_balances(user),
+        native_currency = user.native_currency,
+        basket_names = get_basket_names(),
+        showTaxLossHarvestConfirmForm = "False",
         step_one_visibility = 'hidden',
         step_two_visibility = ''
     )

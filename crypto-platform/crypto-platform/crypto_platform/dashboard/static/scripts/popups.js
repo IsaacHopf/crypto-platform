@@ -33,12 +33,20 @@ function closeWithdrawForm() {
     document.getElementById("withdrawForm").style.display = "none";
 }
 
-function openTaxLossHarvestForm() {
-    document.getElementById("taxLossHarvestForm").style.display = "block";
+function openTaxLossHarvestCheckForm() {
+    document.getElementById("taxLossHarvestCheckForm").style.display = "block";
 }
 
-function closeTaxLossHarvestForm() {
-    document.getElementById("taxLossHarvestForm").style.display = "none";
+function closeTaxLossHarvestCheckForm() {
+    document.getElementById("taxLossHarvestCheckForm").style.display = "none";
+}
+
+function openTaxLossHarvestConfirmForm() {
+    document.getElementById("taxLossHarvestConfirmForm").style.display = "block";
+}
+
+function closeTaxLossHarvestConfirmForm() {
+    document.getElementById("taxLossHarvestConfirmForm").style.display = "none";
 }
 
 function openRetryBuysForm() {
