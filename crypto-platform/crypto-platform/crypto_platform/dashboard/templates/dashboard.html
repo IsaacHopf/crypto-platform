@@ -39,7 +39,7 @@
         </a>
         <nav role="navigation" class="nav-menu w-nav-menu">
             <a href="#dashboard" class="nav-link w-nav-link">dashboard</a>
-            <a href="#invest" class="nav-link w-nav-link">invest</a>
+            <a href="#buy" class="nav-link w-nav-link">buy</a>
             <a href="#sell" class="nav-link w-nav-link">sell</a>
             <a href="#taxlossharvest" class="nav-link w-nav-link">tax-loss harvest</a>
             <a href="#accountsettings" class="nav-link w-nav-link">account settings</a>
@@ -130,10 +130,12 @@
             </div>
             <a href="{{ url_for('dashboard.home') }}" class="link" style="text-align: right; font-size: 14px;">Refresh</a>
             <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Balance (in {{ native_currency }})</th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Balance (in {{ native_currency }})</th>
+                    </tr>
+                </thead>
                 <tr>
                     <td>Cash Wallet</td>
                     <td>{{ cash_wallet_balance }}</td>
@@ -154,17 +156,17 @@
                         <h3 class="call-to-action-heading">Deposit funds into your Cash Wallet to get started!</h3>
                     </div>
                     <div class="align-right w-col w-col-4">
-                        <a href="#invest" class="hollow-button white">Deposit</a>
+                        <a href="#buy" class="hollow-button white">Deposit</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!--Invest Section-->
-        <div id="invest" class="section-3 wf-section">
+        <!--Buy Section-->
+        <div id="buy" class="section-3 wf-section">
             <div class="w-container">
                 <div class="section-title-group">
-                    <h2 class="section-heading centered">Invest in a Basket</h2>
+                    <h2 class="section-heading centered">Buy a Basket</h2>
                     <div class="section-subheading center">Get started by <em>depositing</em> funds into your Cash Wallet. Then, you can <em>buy</em> your preferred basket(s).</div>
                 </div>
 
@@ -220,10 +222,10 @@
                         <label for="{{ basket_name }}" style="display: inline;">{{ basket_name }}</label><br />
                         {% endfor %}
 
-                        <h3 style="margin-top: 10px;">Input the amount to invest (in {{ native_currency }}):</h3>
+                        <h3 style="margin-top: 10px;">Input the amount to buy (in {{ native_currency }}):</h3>
                         <input type="number" min="10" step="any" name="invest-amount" style="display: block; margin-bottom: 3rem;" required />
 
-                        <button type="submit" class="btn">Invest</button>
+                        <button type="submit" class="btn">Buy</button>
                         <button type="button" class="btn cancel" onclick="closeBuyBasketForm()">Close</button>
                     </form>
                 </div>
@@ -235,7 +237,7 @@
             <div class="w-container">
                 <div class="section-title-group">
                     <h2 class="section-heading centered">Sell a Basket</h2>
-                    <div class="section-subheading center"> When you're ready to <em>sell</em>, you can sell your basket(s). Then, you can either reinvest in another basket or <em>withdraw</em> your funds.</div>
+                    <div class="section-subheading center"> When you're ready to <em>sell</em>, you can sell your basket(s). Then, you can either buy another basket or <em>withdraw</em> your funds.</div>
                 </div>
 
                 <div class="div-block">
@@ -265,7 +267,9 @@
                         <h2>Withdraw</h2>
 
                         <h3>Input the amount to withdraw:</h3>
-                        <input type="number" min="1" step="any" name="withdraw-amount" style="display: block; margin-bottom: 3rem;" required />
+                        <input type="number" min="1" step="any" name="withdraw-amount" style="display: block; margin-bottom: 2rem;" required />
+
+                        <p style="margin-bottom: 2rem;">Disclaimer: Buys and Sells take longer than they appear. While your funds are immediately made available to buy or sell, you won't be able to withdraw funds until they completely process.</p>
 
                         <button type="submit" class="btn">Withdraw</button>
                         <button type="button" class="btn cancel" onclick="closeWithdrawForm()">Close</button>
