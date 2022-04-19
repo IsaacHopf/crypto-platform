@@ -241,7 +241,7 @@ def withdraw(user, amount):
             user.withdraw(amount)
         except Exception as e:
             if re.search("withdrawal_limit_exceeded", str(e)):
-                flash('Oh no! Your withdraw did not process. Please wait for your transactions to process. This could take up to a week. Error Code: ' + str(e), 'error')
+                flash('Oh no! Your withdraw did not process. This may be because your buys and sells have not completely processed, which can take 5 - 7 business days. Error Code: ' + str(e), 'error')
             else:
                 flash('Oh no! Your withdraw did not process, please try again in an hour. Error Code: ' + str(e), 'error')
         else:
