@@ -71,7 +71,10 @@ def deposit():
     else:
 
         if re.match("^\d*", str(deposit_amount)): # If the deposit amount exists and is a number ...
-            transact.deposit(user, deposit_amount) # make the deposit.
+            if deposit_amount >= 10:
+                transact.deposit(user, deposit_amount) # make the deposit.
+            else:
+                flash('Whoops! Depsoit amount must be greater than or equal to 10.', 'error')
 
         failed_buys_basket_names = get_failed_buys_basket_names(user)
         failed_sells_basket_names = get_failed_sells_basket_names(user)
@@ -117,7 +120,10 @@ def buybasket():
     else:
 
         if re.match("^\d*", str(invest_amount)): # If the selected basket name and invest amount exist and if the invest amount is a number ...
-            transact.buy_basket(user, selected_basket_name, invest_amount) # make the investment.
+            if invest_amount >= 10:
+                transact.buy_basket(user, selected_basket_name, invest_amount) # make the investment.
+            else:
+                flash('Whoops! Invest amount must be greater than or equal to 10.', 'error')
 
         failed_buys_basket_names = get_failed_buys_basket_names(user)
         failed_sells_basket_names = get_failed_sells_basket_names(user)
