@@ -12,12 +12,13 @@ from crypto_platform import db
 """Transaction Functions"""
 def deposit(user, amount):
     """Deposits funds for the user."""
-    try:
-        user.deposit(amount)
-    except Exception as e:
-        flash('Oh no! Your deposit did not process, please try again in an hour. Error Code: ' + str(e), 'error')
-    else:
-        flash('Your deposit processed successfully! You should receive an email from Coinbase.', 'success')
+    if hasattr(user, 'bank_payment_method_id'):
+        try:
+            user.deposit(amount)
+        except Exception as e:
+            flash('Oh no! Your deposit did not process, please try again in an hour. Error Code: ' + str(e), 'error')
+        else:
+            flash('Your deposit processed successfully! You should receive an email from Coinbase.', 'success')
 
 def buy_basket(user, basket_name, invest_amount):
     """
