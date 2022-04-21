@@ -31,7 +31,7 @@ def buy_basket(user, basket_name, invest_amount):
     basket = get_basket_from_database(basket_name)
 
     if user.get_cash_wallet_balance() < invest_amount:
-        flash('Oh no! You do not have enough funds to invest. Please deposit more funds before buying.', 'error')
+        flash('Oh no! You do not have enough funds to buy. Please deposit more funds before buying.', 'error')
     elif get_failed_buys_from_database(user, basket):
         flash('Please retry your previous buys for ' + basket_name + ' before buying more.', 'error')
     else:

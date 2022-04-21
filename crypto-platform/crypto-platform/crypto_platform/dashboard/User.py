@@ -91,7 +91,7 @@ class User(object):
 
             except Exception as e: # If there was another exception ...
                 nonlocal retries
-                if retries < 3:
+                if retries < 2:
                     retries += 1
                     timer = time.sleep(1) # try again in a second.
                     transaction()
@@ -123,7 +123,7 @@ class User(object):
 
             except Exception as e: # If there was another exception ...
                 nonlocal retries
-                if retries < 3:
+                if retries < 2:
                     retries += 1
                     timer = time.sleep(1) # try again in a second.
                     transaction()
@@ -159,7 +159,7 @@ class User(object):
 
             except Exception as e: # If there was another exception ...
                 nonlocal retries
-                if retries < 3:
+                if retries < 2:
                     retries += 1
                     timer = time.sleep(1) # try again in a second.
                     transaction()
@@ -194,7 +194,7 @@ class User(object):
 
             except Exception as e: # If there was another exception ...
                 nonlocal retries
-                if retries < 3:
+                if retries < 2:
                     retries += 1
                     timer = time.sleep(1) # try again in a second.
                     transaction()
@@ -225,7 +225,7 @@ class User(object):
 
             except Exception as e: # If there was another exception ...
                 nonlocal retries
-                if retries < 3:
+                if retries < 2:
                     retries += 1
                     timer = time.sleep(1) # try again in a second.
                     transaction()

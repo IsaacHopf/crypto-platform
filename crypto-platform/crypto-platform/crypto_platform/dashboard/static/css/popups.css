@@ -80,6 +80,7 @@
         text-align: left;
         font-size: 18px;
         margin-right: 1rem;
+        margin-bottom: 0;
     }
 
     .error-popup .popup-clear-btn {
@@ -142,4 +143,30 @@
 
     .form-container .btn:hover, .open-button:hover {
         opacity: 1;
+    }
+
+/*Add Bank Account Popup*/
+.add-bank-account-popup {
+    background-color: #BDE5F8;
+    width: 100%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    padding-left: 2%;
+    padding-right: 2%;
+    margin-bottom: 1%;
+    border-radius: 8px;
+    z-index: 1000002;
+}
+
+    .add-bank-account-popup h4 {
+        color: #00529B;
+        display: inline;
+        text-align: left;
+        font-size: 21px;
+        margin-right: 1rem;
+    }
+
+    .add-bank-account-popup a {
+        display: inline;
+        font-size: 20px;
     }
