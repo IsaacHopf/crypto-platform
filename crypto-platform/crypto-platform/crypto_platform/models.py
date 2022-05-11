@@ -50,8 +50,16 @@ class BasketModel(db.Model):
         db.session.add(new_basket)
         db.session.commit()
 
+    def get_all():
+        baskets = BasketModel.query.all()
+        return baskets
+
     def get_by_name(basket_name):
         basket = BasketModel.query.filter_by(name = basket_name).first()
+        return basket
+
+    def get_by_id(basket_id):
+        basket = BasketModel.query.filter_by(id = basket_id).first()
         return basket
 
     def update(basket, name, description):
@@ -112,6 +120,10 @@ class UserBasketModel(db.Model):
 
         db.session.add(new_user_basket)
         db.session.commit()
+
+    def get_all_by_user(user):
+        user_baskets = UserBasketModel.query.filter_by(user_id = user.coinbase_id).all()
+        return user_baskets
 
     def get_by_user_and_basket(user, basket):
         user_basket = UserBasketModel.query.filter_by(user_id = user.coinbase_id, basket_id = basket.id).first()
@@ -202,6 +214,10 @@ class FailedBuyModel(db.Model):
         db.session.add(new_failed_buy)
         db.session.commit()
 
+    def get_all_by_user(user):
+        failed_buys = FailedBuyModel.query.filter_by(user_id = user.coinbase_id).all()
+        return failed_buys
+
     def get_all_by_user_and_basket(user, basket):
         failed_buys = FailedBuyModel.query.filter_by(user_id = user.coinbase_id, basket_id = basket.id).all()
         return failed_buys
@@ -235,6 +251,10 @@ class FailedSellModel(db.Model):
 
         db.session.add(new_failed_sell)
         db.session.commit()
+
+    def get_all_by_user(user):
+        failed_sells = FailedSellModel.query.filter_by(user_id = user.coinbase_id).all()
+        return failed_sells
 
     def get_all_by_user_and_basket(user, basket):
         failed_sells = FailedSellModel.query.filter_by(user_id = user.coinbase_id, basket_id = basket.id).all()

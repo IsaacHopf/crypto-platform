@@ -51,8 +51,8 @@ class User(object):
 
         """Add the current user to the database if necessary."""
         if current_user is None:
-            if UserModel.query.get(self.coinbase_id) is None: # If the user does not exist in the database ...
-                self.__add_user_to_database() # add them.
+            if UserModel.get_by_id(self.coinbase_id) is None: # If the user does not exist in the database ...
+                UserModel.add(self.coinbase_id, self.email) # add them.
 
     def __get_cash_payment_method_id(self):
         """Gets the user's Cash payment method. This payment method always exists and links directly to the user's Cash wallet (which is in their native currency)."""
